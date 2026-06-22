@@ -44,7 +44,7 @@ const About = () => {
               a Bachelor of Science in Computer System Administration from <span className="text-green">YCMOU University</span>.
             </p>
             <p>
-              Fast-forward to today, and I've had the privilege of working at{" "}
+              Fast-forward to today, and I&rsquo;ve had the privilege of working at{" "}
               <span className="text-green">Shaurya Technosoft</span> as a DevOps Engineer. My main focus these days is
               building robust infrastructure, automating CI/CD pipelines, and ensuring system reliability.
             </p>
