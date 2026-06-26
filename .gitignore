@@ -17,10 +17,6 @@
 /.next/
 /out/
 
-# gatsby
-/.cache/
-/public/
-
 # production
 /build
 
@@ -42,3 +38,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+next-env.d.ts
