@@ -71,14 +71,14 @@ const Experience = () => {
           <div className="h-[1px] w-full max-w-xs bg-lightest-navy/50"></div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           {/* Tab List */}
-          <div className="flex md:flex-col overflow-x-auto md:overflow-visible relative border-b md:border-b-0 md:border-l border-lightest-navy font-mono text-sm max-w-max md:w-32">
+          <div className="flex md:flex-col overflow-x-auto md:overflow-visible relative border-b md:border-b-0 md:border-l border-lightest-navy font-mono text-sm shrink-0 md:w-48">
             {jobs.map((job, i) => (
               <button
                 key={i}
                 onClick={() => setActiveTab(i)}
-                className={`px-4 py-3 md:py-2 md:pl-4 md:pr-0 border-b-2 md:border-b-0 md:border-l-2 text-left whitespace-nowrap transition-all hover:bg-light-navy/30 hover:text-green ${
+                className={`px-4 py-3 md:py-2.5 md:px-5 border-b-2 md:border-b-0 md:border-l-2 text-left whitespace-nowrap transition-all hover:bg-light-navy/30 hover:text-green ${
                   activeTab === i
                     ? "border-green text-green bg-light-navy/10"
                     : "border-transparent text-slate"
