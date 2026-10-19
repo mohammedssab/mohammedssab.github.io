@@ -37,7 +37,7 @@ const Hero = () => {
         transition={{ duration: 0.3, delay: 0.8 }}
         className="text-slate max-w-xl text-lg mb-12"
       >
-        I specialize in DevOps & Infrastructure Automation, Docker, Ansible, and CI/CD. I am an Open-Source Advocate.
+        I specialize in Kubernetes (Talos Linux, Cilium eBPF), GitOps, High-Scale Database HA, and CI/CD Automation. I am an Open-Source Advocate.
       </motion.p>
       <motion.div
         initial={{ y: 20, opacity: 0 }}
