@@ -5,15 +5,15 @@ import { motion } from "framer-motion";
 import { FiTarget } from "react-icons/fi";
 
 const About = () => {
-  const skills = [
-    "Linux / Windows Server",
-    "Nginx / Apache / Tomcat / IIS",
-    "AWS / GCP / DigitalOcean / Proxmox",
-    "Docker / Kubernetes / Helm / Argo CD",
-    "GitHub Actions / Jenkins",
-    "Ansible",
-    "MySQL / PostgreSQL / MSSQL / MongoDB",
-    "Prometheus / Grafana / Loki",
+  const recentSkills = [
+    "Kubernetes (Talos Linux & k3s)",
+    "Cilium CNI (eBPF) & Envoy Gateway",
+    "GitOps (FluxCD & Argo CD)",
+    "PostgreSQL HA (Patroni) & TimescaleDB",
+    "OpenBao & HashiCorp Vault",
+    "Grafana Alloy, Prometheus & Loki",
+    "CI/CD & Runner Caching (Gitea / GitHub)",
+    "Harbor Registry & Container Security",
   ];
 
   return (
@@ -49,17 +49,8 @@ const About = () => {
               building robust infrastructure, automating CI/CD pipelines, and ensuring system reliability.
             </p>
             <p>Here are a few technologies I’ve been working with recently:</p>
-            <ul className="grid grid-cols-2 gap-2 mt-4 font-mono text-sm">
-              {[
-                "Kubernetes & Docker & Helm",
-                "GitHub Actions & Argo CD",
-                "Ansible & Infrastructure Automation",
-                "Prometheus & Grafana & Loki",
-                "AWS / GCP / DigitalOcean",
-                "Linux / Windows Server",
-                "PostgreSQL / MySQL / MongoDB",
-                "Nginx / Apache / Envoy Gateway",
-              ].map((skill, i) => (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4 font-mono text-sm">
+              {recentSkills.map((skill, i) => (
                 <li key={i} className="flex items-center gap-2">
                   <span className="text-green text-xs">▹</span>
                   {skill}

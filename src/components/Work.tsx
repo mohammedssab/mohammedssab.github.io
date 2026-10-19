@@ -6,24 +6,24 @@ import { FiExternalLink, FiGithub, FiFolder } from "react-icons/fi";
 
 const projects = [
   {
-    title: "Infrastructure Automation & Security",
+    title: "Zero-Trust Infrastructure & Secrets",
     description:
-      "Automated infrastructure provisioning using Ansible and Proxmox VM templates. Implemented HashiCorp Vault for centralized secrets management integrated with CI/CD pipelines, improving security of application deployments.",
-    tech: ["Ansible", "Proxmox", "HashiCorp Vault"],
+      "Executed zero-downtime secrets cutover from HashiCorp Vault to OpenBao with AppRole authentication. Accelerated CI/CD runner pipelines with persistent caching, slashing build times by 87% (from 55+ min to ~7 min).",
+    tech: ["OpenBao", "Gitea Actions", "Harbor", "Trivy"],
     links: { github: "#", external: "#" },
   },
   {
-    title: "High Availability Monitoring",
+    title: "High-Scale Telemetry & Database HA",
     description:
-      "Implemented centralized monitoring using Prometheus, Grafana, Loki, and Uptime Kuma. Configured proactive alerting for critical system resources across multiple servers to ensure high uptime and reduce troubleshooting time.",
-    tech: ["Prometheus", "Grafana", "Loki", "Uptime Kuma"],
+      "Scaled stateful infrastructure sustaining ~20,000 records/sec by engineering PostgreSQL HA with Patroni and PgBouncer write-routing, Kafka tuning, and automated TimescaleDB compression policies.",
+    tech: ["PostgreSQL HA", "Patroni", "TimescaleDB", "Grafana Alloy"],
     links: { github: "#", external: "#" },
   },
   {
-    title: "Kubernetes Orchestration",
+    title: "Immutable Kubernetes & eBPF Networking",
     description:
-      "Built and administered Kubernetes clusters using kubeadm, Helm, and Argo CD. Enabled automated deployments and improved scalability of microservices-based applications across development and production.",
-    tech: ["Kubernetes", "Helm", "Argo CD", "Docker"],
+      "Administered production Kubernetes clusters on immutable Talos Linux OS with automated rolling upgrades via Tuppr operator. Executed zero-downtime migration to Cilium CNI (v1.20) with eBPF data path and Envoy Gateway.",
+    tech: ["Kubernetes", "Talos Linux", "Cilium eBPF", "Envoy Gateway"],
     links: { github: "#", external: "#" },
   },
 ];
