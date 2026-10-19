@@ -2,20 +2,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FiTarget } from "react-icons/fi";
 
 const About = () => {
-  const skills = [
-    "Linux / Windows Server",
-    "Nginx / Apache / Tomcat / IIS",
-    "AWS / GCP / DigitalOcean / Proxmox",
-    "Docker / Kubernetes / Helm / Argo CD",
-    "GitHub Actions / Jenkins",
-    "Ansible",
-    "MySQL / PostgreSQL / MSSQL / MongoDB",
-    "Prometheus / Grafana / Loki",
-  ];
-
   return (
     <section id="about" className="max-w-4xl mx-auto py-24 px-6 md:px-12">
       <motion.div
@@ -44,7 +32,7 @@ const About = () => {
               a Bachelor of Science in Computer System Administration from <span className="text-green">YCMOU University</span>.
             </p>
             <p>
-              Fast-forward to today, and I've had the privilege of working at{" "}
+              Fast-forward to today, and I&apos;ve had the privilege of working at{" "}
               <span className="text-green">Shaurya Technosoft</span> as a DevOps Engineer. My main focus these days is
               building robust infrastructure, automating CI/CD pipelines, and ensuring system reliability.
             </p>
