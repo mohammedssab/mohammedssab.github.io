@@ -22,7 +22,7 @@ const projects = [
   {
     title: "Immutable Kubernetes & eBPF Networking",
     description:
-      "Administered production Kubernetes clusters on immutable Talos Linux OS with automated rolling upgrades via Tuppr operator. Executed zero-downtime migration to Cilium CNI (v1.20) with eBPF data path and Envoy Gateway.",
+      "Administered production Kubernetes clusters on immutable Talos Linux OS with automated rolling upgrades via Tuppr operator. Executed zero-downtime migration to Cilium CNI with eBPF data path and Envoy Gateway.",
     tech: ["Kubernetes", "Talos Linux", "Cilium eBPF", "Envoy Gateway"],
     links: { github: "#", external: "#" },
   },
