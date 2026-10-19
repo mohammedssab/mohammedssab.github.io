@@ -234,13 +234,13 @@ export const portfolioData: PortfolioData = {
         "Ansible",
       ],
       descriptions: [
-        "eBPF Networking & Gateway API: Architected zero-downtime cluster migration to Cilium CNI (v1.20) with eBPF data path and Kubernetes Gateway API via Envoy for high-throughput L4/L7 routing.",
+        "eBPF Networking & Gateway API: Architected zero-downtime cluster migration to Cilium CNI with eBPF data path and Kubernetes Gateway API via Envoy for high-throughput L4/L7 routing.",
         "Immutable Talos Infrastructure: Engineered production Kubernetes platforms on immutable Talos Linux OS, standardizing automated rolling node upgrades via Tuppr operator with zero disruption.",
         "High-Throughput Database HA: Scaled stateful telemetry platform to sustain ~20,000 records/sec by engineering PostgreSQL HA (Patroni/PgBouncer) and TimescaleDB compression policies.",
         "CI/CD Pipeline Acceleration: Re-engineered enterprise runner infrastructure with persistent caching, slashing build durations by 87% (from 55+ min to ~7 min) and eliminating runner OOM crashes.",
         "Declarative GitOps Delivery: Standardized multi-environment delivery lifecycles using FluxCD and Argo CD ApplicationSets, enforcing zero configuration drift and automated rollback capabilities.",
         "Edge Computing & Resiliency: Orchestrated edge telematics on k3s and Raspberry Pi 5 with Hailo-10H AI acceleration; configured Grafana Alloy disk WAL buffering for zero telemetry loss during network drops.",
-        "Zero-Trust Secrets & Governance: Executed zero-downtime cutover from HashiCorp Vault to OpenBao 2.6.2 on port 8200; automated enterprise Harbor container security scanning with Trivy and retention policies.",
+        "Zero-Trust Secrets & Governance: Executed zero-downtime cutover from HashiCorp Vault to OpenBao; automated enterprise Harbor container security scanning with Trivy and retention policies.",
         "Enterprise Full-Stack Observability: Unified multi-host telemetry by deploying Grafana Alloy for Loki journal log aggregation and Prometheus metrics, establishing proactive alerting and high system availability.",
       ],
     },
@@ -296,10 +296,10 @@ export const portfolioData: PortfolioData = {
       node: "node-worker-01",
       ip: "10.244.1.42",
       description:
-        "Automated multi-node infrastructure provisioning and self-hosted CI/CD infrastructure at Shaurya Technosoft. Executed zero-downtime production cutover from HashiCorp Vault to OpenBao 2.6.2, scaled Gitea Actions runners with persistent caching, and deployed Harbor registry with Trivy security scanning.",
+        "Automated multi-node infrastructure provisioning and self-hosted CI/CD infrastructure at Shaurya Technosoft. Executed zero-downtime production cutover from HashiCorp Vault to OpenBao, scaled Gitea Actions runners with persistent caching, and deployed Harbor registry with Trivy security scanning.",
       tech: ["OpenBao", "Ansible", "Semaphore UI", "Gitea Actions", "Harbor", "Sonatype Nexus"],
       responsibilities:
-        "Engineered Ansible and Semaphore UI automation workflows, executed the HashiCorp Vault to OpenBao 2.6.2 cutover on port 8200 without breaking downstream workloads, and configured dedicated cached runners with persistent Gradle and npm caches.",
+        "Engineered Ansible and Semaphore UI automation workflows, executed the HashiCorp Vault to OpenBao cutover without breaking downstream workloads, and configured dedicated cached runners with persistent Gradle and npm caches.",
       challenges:
         "Migrating active KV v2 secrets, policies, and transit engines from Vault to OpenBao while running zero-downtime production pipelines, and eliminating runner OOM hangs during Android builds.",
       outcomes:
@@ -310,9 +310,9 @@ export const portfolioData: PortfolioData = {
       },
       logs: [
         "[infra-sec] init: Loading Semaphore UI automation templates and Ansible playbooks",
-        "[infra-sec] openbao: Executed zero-downtime cutover from HashiCorp Vault to OpenBao 2.6.2 on port 8200",
+        "[infra-sec] openbao: Executed zero-downtime cutover from HashiCorp Vault to OpenBao",
         "[infra-sec] runners: Registered dedicated Gitea Actions cached runner with persistent Gradle/npm volumes",
-        "[infra-sec] registry: Configured Harbor v2.15.2 with Trivy vulnerability scanning and automated retention cleanup",
+        "[infra-sec] registry: Configured Harbor registry with Trivy vulnerability scanning and automated retention cleanup",
         "[infra-sec] outcome: Build times reduced from 55m to 7m; zero plaintext secrets across all pipelines",
       ],
     },
@@ -360,7 +360,7 @@ export const portfolioData: PortfolioData = {
       node: "node-master-01",
       ip: "10.244.0.15",
       description:
-        "Built and administered production Kubernetes clusters running on immutable Talos Linux OS. Executed live cluster migration from Calico and MetalLB to Cilium CNI v1.20.1 with eBPF data path, Kubernetes Gateway API with Envoy Gateway, and FluxCD GitOps automation.",
+        "Built and administered production Kubernetes clusters running on immutable Talos Linux OS. Executed live cluster migration from Calico and MetalLB to Cilium CNI with eBPF data path, Kubernetes Gateway API with Envoy Gateway, and FluxCD GitOps automation.",
       tech: ["Talos Linux", "Kubernetes", "Cilium CNI (eBPF)", "Gateway API", "Envoy Gateway", "FluxCD", "Argo CD"],
       responsibilities:
         "Automated Talos node lifecycle and rolling updates with Tuppr operator, performed control-plane to worker node migrations, executed live Cilium CNI migration, and standardized GitOps releases using FluxCD and Argo CD.",
@@ -373,8 +373,8 @@ export const portfolioData: PortfolioData = {
         external: "#",
       },
       logs: [
-        "[talos-cilium] init: Bootstrapped immutable Talos Linux OS v1.13.x with Tuppr automated rolling upgrade operator",
-        "[talos-cilium] migration: Executed live CNI migration from Calico + MetalLB to Cilium CNI v1.20.1 with eBPF",
+        "[talos-cilium] init: Bootstrapped immutable Talos Linux OS with Tuppr automated rolling upgrade operator",
+        "[talos-cilium] migration: Executed live CNI migration from Calico + MetalLB to Cilium CNI with eBPF",
         "[talos-cilium] gateway: Configured Kubernetes Gateway API HTTPRoute and TCPRoute with Envoy Gateway",
         "[talos-cilium] gitops: Synchronized declarative FluxCD Kustomizations and Argo CD ApplicationSets",
         "[talos-cilium] outcome: Production cluster modernized to immutable Talos + Cilium eBPF with zero downtime",
@@ -412,7 +412,7 @@ export const portfolioData: PortfolioData = {
     { name: "loki-logging", type: "ClusterIP", clusterIp: "10.96.40.12", externalIp: "<none>", ports: "3100/TCP", age: "240d", targetCategory: "Monitoring" },
     { name: "patroni-postgresql-ha", type: "ClusterIP", clusterIp: "10.96.50.21", externalIp: "<none>", ports: "5432/TCP", age: "280d", targetCategory: "Databases" },
     { name: "envoy-gateway-api", type: "LoadBalancer", clusterIp: "10.96.60.10", externalIp: "192.168.1.105", ports: "80:30080/TCP,443:30443/TCP", age: "200d", targetCategory: "Networking" },
-    { name: "openbao-vault-secrets", type: "ClusterIP", clusterIp: "10.96.70.33", externalIp: "<none>", ports: "8200/TCP", age: "260d", targetCategory: "Security" },
+    { name: "openbao-vault-secrets", type: "ClusterIP", clusterIp: "10.96.70.33", externalIp: "<none>", ports: "443/TCP", age: "260d", targetCategory: "Security" },
   ],
 
   contact: [
