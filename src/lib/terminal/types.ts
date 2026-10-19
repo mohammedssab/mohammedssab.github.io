@@ -3,6 +3,8 @@ export type CommandOutputType =
   | 'describe'
   | 'logs'
   | 'text'
+  | 'code'
+  | 'name'
   | 'error'
   | 'clear'
   | 'all';
@@ -13,6 +15,7 @@ export interface TableOutput {
   headers: string[];
   rows: string[][];
   footer?: string;
+  isWide?: boolean;
 }
 
 export interface DescribeSection {
@@ -40,6 +43,19 @@ export interface TextOutput {
   content: string;
   isHelp?: boolean;
   isExplain?: boolean;
+  isVersion?: boolean;
+}
+
+export interface CodeOutput {
+  type: 'code';
+  language: 'yaml' | 'json';
+  content: string;
+}
+
+export interface NameOutput {
+  type: 'name';
+  resource: string;
+  names: string[];
 }
 
 export interface ErrorOutput {
@@ -65,6 +81,8 @@ export type CommandResult =
   | DescribeOutput
   | LogsOutput
   | TextOutput
+  | CodeOutput
+  | NameOutput
   | ErrorOutput
   | ClearOutput
   | AllOutput;

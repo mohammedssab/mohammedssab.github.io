@@ -4,13 +4,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { portfolioData } from "../../data/portfolioData.ts";
 import { executeCommand } from "../../lib/terminal/parser.ts";
 import { getAutocomplete } from "../../lib/terminal/autocomplete.ts";
+import { createHistoryManager } from "../../lib/terminal/history.ts";
 import type { HistoryItem } from "../../lib/terminal/types.ts";
 import { TerminalOutput } from "./TerminalOutput.tsx";
 import { TerminalInput, TerminalInputHandle } from "./TerminalInput.tsx";
-import { QuickCommands } from "./QuickCommands.tsx";
+import { CommandReference } from "./CommandReference.tsx";
 
 export const Terminal: React.FC = () => {
-  // Initialize with welcome message and kubectl get profile
+  // Initialize with initial executed command
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     const initialCmd = "kubectl get profile";
     const initialResult = executeCommand(initialCmd, portfolioData);
@@ -25,16 +26,17 @@ export const Terminal: React.FC = () => {
   });
 
   const [inputVal, setInputVal] = useState("");
-  const [historyIndex, setHistoryIndex] = useState<number | null>(null);
-  const [tempInput, setTempInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // History Manager instance in ref so it persists across renders without recreating
+  const historyManagerRef = useRef(createHistoryManager(["kubectl get profile"]));
 
   const terminalRef = useRef<HTMLDivElement>(null);
   const terminalBodyRef = useRef<HTMLDivElement>(null);
   const inputHandleRef = useRef<TerminalInputHandle>(null);
   const isInitialMount = useRef(true);
 
-  // Auto-scroll terminal body only on new output, WITHOUT stealing page scroll
+  // Auto-scroll terminal body ONLY on new output, WITHOUT stealing window scroll
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -47,7 +49,14 @@ export const Terminal: React.FC = () => {
 
   const runCommand = (commandToRun: string) => {
     const trimmed = commandToRun.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      setInputVal("");
+      setSuggestions([]);
+      return;
+    }
+
+    // Add to history manager
+    historyManagerRef.current.add(trimmed);
 
     const result = executeCommand(trimmed, portfolioData);
 
@@ -66,9 +75,13 @@ export const Terminal: React.FC = () => {
     }
 
     setInputVal("");
-    setHistoryIndex(null);
-    setTempInput("");
     setSuggestions([]);
+  };
+
+  const insertCommand = (commandToInsert: string) => {
+    setInputVal(commandToInsert);
+    setSuggestions([]);
+    inputHandleRef.current?.focus();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -96,7 +109,7 @@ export const Terminal: React.FC = () => {
         ]);
       }
       setInputVal("");
-      setHistoryIndex(null);
+      historyManagerRef.current.resetNavigation();
       setSuggestions([]);
       return;
     }
@@ -115,17 +128,9 @@ export const Terminal: React.FC = () => {
     // Arrow Up: navigate backward in command history
     if (e.key === "ArrowUp") {
       e.preventDefault();
-      if (history.length === 0) return;
-
-      if (historyIndex === null) {
-        setTempInput(inputVal);
-        const newIdx = history.length - 1;
-        setHistoryIndex(newIdx);
-        setInputVal(history[newIdx].command);
-      } else if (historyIndex > 0) {
-        const newIdx = historyIndex - 1;
-        setHistoryIndex(newIdx);
-        setInputVal(history[newIdx].command);
+      const prev = historyManagerRef.current.previous(inputVal);
+      if (prev !== null) {
+        setInputVal(prev);
       }
       setSuggestions([]);
       return;
@@ -134,41 +139,47 @@ export const Terminal: React.FC = () => {
     // Arrow Down: navigate forward in command history
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      if (historyIndex === null) return;
-
-      if (historyIndex < history.length - 1) {
-        const newIdx = historyIndex + 1;
-        setHistoryIndex(newIdx);
-        setInputVal(history[newIdx].command);
-      } else {
-        setHistoryIndex(null);
-        setInputVal(tempInput);
+      const next = historyManagerRef.current.next();
+      if (next !== null) {
+        setInputVal(next);
       }
       setSuggestions([]);
       return;
     }
 
     // Clear suggestions when user types regular characters
-    if (suggestions.length > 0 && e.key !== "Shift" && e.key !== "Control" && e.key !== "Alt") {
+    if (
+      suggestions.length > 0 &&
+      e.key !== "Shift" &&
+      e.key !== "Control" &&
+      e.key !== "Alt"
+    ) {
       setSuggestions([]);
     }
   };
 
   const handleTerminalClick = (e: React.MouseEvent) => {
-    // If user is selecting text, do not steal focus
     const selection = window.getSelection();
     if (selection && selection.toString().length > 0) {
       return;
     }
-    // Only focus if not clicking an interactive link or button
     const target = e.target as HTMLElement;
     if (target.tagName !== "A" && target.tagName !== "BUTTON") {
       inputHandleRef.current?.focus();
     }
   };
 
+const QUICK_CHIPS = [
+  "kubectl get profile",
+  "kubectl get skills",
+  "kubectl get projects",
+  "kubectl get experience",
+  "kubectl get all",
+  "help",
+];
+
   return (
-    <div className="w-full max-w-5xl mx-auto my-6 px-3 sm:px-6">
+    <div className="w-full max-w-[1000px] mx-auto">
       {/* Terminal Window Container */}
       <div
         ref={terminalRef}
@@ -176,40 +187,29 @@ export const Terminal: React.FC = () => {
         className="rounded-xl border border-slate-800 bg-[#080e1a]/95 backdrop-blur-md shadow-2xl overflow-hidden transition-all duration-300 hover:border-slate-700/80 focus-within:border-emerald-500/50 focus-within:ring-1 focus-within:ring-emerald-500/20"
       >
         {/* Terminal Header Bar */}
-        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 select-none">
-          {/* Window control buttons */}
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-rose-500/90 inline-block border border-rose-600/50" />
-            <span className="w-3 h-3 rounded-full bg-amber-500/90 inline-block border border-amber-600/50" />
-            <span className="w-3 h-3 rounded-full bg-emerald-500/90 inline-block border border-emerald-600/50" />
-            <span className="ml-2 font-mono text-[11px] text-slate-400 hidden sm:inline">
-              kubeops-terminal -- bash
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-slate-900/90 border-b border-slate-800 select-none">
+          {/* Window control dots & title */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block border border-rose-600/40" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block border border-amber-600/40" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block border border-emerald-600/40" />
+            </div>
+            <span className="font-mono text-[13px] text-white font-medium ml-1">
+              mohammed@portfolio
             </span>
           </div>
 
-          {/* Title & context */}
-          <div className="font-mono text-xs text-slate-300 font-medium flex items-center gap-1.5 truncate">
-            <span className="text-cyan-400">⎈</span>
-            <span className="text-slate-100">mohammed@kubeops</span>
-            <span className="text-slate-500 hidden md:inline">~ cluster: prod-pune-01</span>
-          </div>
-
-          {/* Status & clear button */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Ready</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => runCommand("clear")}
-              title="Clear terminal buffer (Ctrl+L)"
-              aria-label="Clear terminal"
-              className="font-mono text-[11px] text-slate-400 hover:text-slate-200 hover:bg-slate-800 px-2 py-0.5 rounded border border-slate-800 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
+          {/* Clear button */}
+          <button
+            type="button"
+            onClick={() => runCommand("clear")}
+            title="Clear terminal buffer (Ctrl+L)"
+            aria-label="Clear terminal"
+            className="font-mono text-xs text-slate-300 hover:text-white hover:bg-slate-800 px-2.5 py-0.5 rounded border border-slate-700/60 transition-colors cursor-pointer"
+          >
+            Clear
+          </button>
         </div>
 
         {/* Terminal Body */}
@@ -217,37 +217,39 @@ export const Terminal: React.FC = () => {
           ref={terminalBodyRef}
           role="log"
           aria-live="polite"
-          className="p-3 sm:p-5 max-h-[580px] min-h-[380px] overflow-y-auto terminal-scroll text-slate-200 font-mono text-xs sm:text-sm space-y-4"
+          className="p-3 sm:p-4 min-h-[380px] max-h-[560px] overflow-y-auto terminal-scroll text-slate-200 font-mono text-[13px] sm:text-sm space-y-3"
         >
-          {/* Welcome Banner */}
-          <div className="p-3 rounded-lg bg-slate-900/40 border border-slate-800/70 text-slate-300 space-y-1.5 text-xs">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/60 pb-2">
-              <div className="flex items-center gap-2 text-cyan-400 font-semibold">
-                <span>⎈</span>
-                <span>Kubernetes CLI Portfolio Environment [v1.31.2-k8s]</span>
-              </div>
-              <span className="text-[10px] text-slate-500 font-mono">
-                Context: mohammed@kubeops (namespace: portfolio)
-              </span>
+          {/* Thin hint & disclaimer line */}
+          <div className="p-2 sm:px-3 sm:py-2 rounded bg-slate-900/60 border border-slate-800/80 flex flex-wrap items-center justify-between gap-1.5 text-xs">
+            <div className="flex items-center gap-1.5 text-slate-300">
+              <span className="text-slate-400">Try:</span>
+              <button
+                type="button"
+                onClick={() => runCommand("kubectl get skills")}
+                className="text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer font-medium"
+              >
+                kubectl get skills
+              </button>
+              <span className="text-slate-500">·</span>
+              <button
+                type="button"
+                onClick={() => runCommand("kubectl get projects")}
+                className="text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer font-medium"
+              >
+                kubectl get projects
+              </button>
             </div>
-            <p className="text-slate-400 text-[11px] pt-1">
-              Type <span className="text-emerald-400 font-semibold">&apos;kubectl get profile&apos;</span>,{" "}
-              <span className="text-cyan-400 font-semibold">&apos;kubectl get skills&apos;</span>, or{" "}
-              <span className="text-sky-400 font-semibold">&apos;help&apos;</span> to explore Mohammed&apos;s
-              profile. Tab completion and arrow history are enabled.
-            </p>
-            <div className="text-[10px] text-slate-500 flex items-center gap-1.5 pt-0.5">
-              <span>ⓘ</span>
-              <span>Portfolio simulation — not a live Kubernetes cluster.</span>
-            </div>
+            <span className="text-slate-400 text-[11px] sm:text-xs">
+              Simulated portfolio environment — not a live Kubernetes cluster.
+            </span>
           </div>
 
           {/* Executed History */}
           {history.map((item) => (
             <div key={item.id} className="space-y-1.5">
-              <div className="flex items-center gap-2 text-slate-100 text-xs sm:text-sm">
-                <span className="text-emerald-400 select-none">mohammed@kubeops:~$</span>
-                <span className="font-semibold text-slate-100">{item.command}</span>
+              <div className="flex items-center gap-2 text-white text-[13px] sm:text-sm">
+                <span className="text-emerald-400 select-none">mohammed@portfolio:~$</span>
+                <span className="font-semibold text-white">{item.command}</span>
               </div>
               <TerminalOutput result={item.result} />
             </div>
@@ -263,10 +265,32 @@ export const Terminal: React.FC = () => {
             suggestions={suggestions}
           />
         </div>
+
+        {/* Terminal Footer with Quick Command Chips */}
+        <div className="px-3 sm:px-4 py-2.5 bg-slate-900/90 border-t border-slate-800 font-mono text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-slate-400 text-xs font-semibold mr-1">Quick:</span>
+            {QUICK_CHIPS.map((cmd) => (
+              <button
+                key={cmd}
+                type="button"
+                onClick={() => runCommand(cmd)}
+                aria-label={`Execute ${cmd}`}
+                className="px-2.5 py-1 rounded text-xs border border-slate-700/80 bg-slate-800/80 text-slate-200 hover:border-emerald-500/50 hover:text-emerald-300 hover:bg-emerald-950/30 active:scale-95 transition-all cursor-pointer font-mono"
+              >
+                <span className="text-cyan-400 mr-1">$</span>
+                <span>{cmd}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Quick Commands row */}
-      <QuickCommands onRunCommand={runCommand} />
+      {/* Collapsible Command Reference panel */}
+      <CommandReference
+        onRunCommand={runCommand}
+        onInsertCommand={insertCommand}
+      />
     </div>
   );
 };

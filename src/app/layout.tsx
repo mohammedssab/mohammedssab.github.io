@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import SocialSidebars from "@/components/SocialSidebars";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const firaCode = Fira_Code({ subsets: ["latin"], variable: "--font-fira-code", display: "swap" });
@@ -69,7 +68,6 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${firaCode.variable} font-sans bg-[#070d18] text-slate-300 antialiased`}>
         <Navbar />
-        <SocialSidebars />
         {children}
       </body>
     </html>

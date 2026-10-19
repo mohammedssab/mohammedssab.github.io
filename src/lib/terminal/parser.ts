@@ -1,67 +1,122 @@
 import type { PortfolioData } from "../../data/portfolioData.ts";
-import type { CommandResult, TextOutput } from "./types.ts";
+import type {
+  CommandResult,
+  TableOutput,
+  TextOutput,
+  CodeOutput,
+  NameOutput,
+  AllOutput,
+} from "./types.ts";
+import {
+  SUPPORTED_RESOURCES,
+  UNSUPPORTED_VERBS,
+  resolveResource,
+} from "./commandCatalog.ts";
+import type { OutputFormat } from "./commandCatalog.ts";
+import { serializeYaml } from "./yaml.ts";
 
-const MAX_INPUT_LENGTH = 256;
-
-const AVAILABLE_RESOURCES = [
-  "profile",
-  "skills",
-  "experience",
-  "projects",
-  "certifications",
-  "education",
-  "contact",
-  "resume",
-  "pods",
-  "services",
-  "all",
-];
-
-const RESOURCE_ALIASES: Record<string, string> = {
-  profile: "profile",
-  prof: "profile",
-  skills: "skills",
-  skill: "skills",
-  experience: "experience",
-  exp: "experience",
-  jobs: "experience",
-  work: "projects",
-  projects: "projects",
-  proj: "projects",
-  certifications: "certifications",
-  certs: "certifications",
-  cert: "certifications",
-  education: "education",
-  edu: "education",
-  contact: "contact",
-  contacts: "contact",
-  resume: "resume",
-  cv: "resume",
-  pods: "pods",
-  pod: "pods",
-  po: "pods",
-  services: "services",
-  service: "services",
-  svc: "services",
-  all: "all",
-};
+const MAX_INPUT_LENGTH = 200;
 
 /**
- * Tokenizes command safely into args
+ * Tokenize command string supporting single and double quotes
  */
-function tokenize(input: string): string[] {
+export function tokenizeInput(input: string): string[] {
   const trimmed = input.trim();
   if (!trimmed) return [];
-  // Tokenize by spaces while ignoring duplicate whitespace
-  return trimmed.split(/\s+/);
+
+  const tokens: string[] = [];
+  let current = "";
+  let inDoubleQuote = false;
+  let inSingleQuote = false;
+
+  for (let i = 0; i < trimmed.length; i++) {
+    const char = trimmed[i];
+
+    if (char === '"' && !inSingleQuote) {
+      inDoubleQuote = !inDoubleQuote;
+      continue;
+    }
+
+    if (char === "'" && !inDoubleQuote) {
+      inSingleQuote = !inSingleQuote;
+      continue;
+    }
+
+    if (/\s/.test(char) && !inDoubleQuote && !inSingleQuote) {
+      if (current.length > 0) {
+        tokens.push(current);
+        current = "";
+      }
+    } else {
+      current += char;
+    }
+  }
+
+  if (current.length > 0) {
+    tokens.push(current);
+  }
+
+  return tokens;
+}
+
+interface ParsedFlags {
+  outputFormat?: OutputFormat;
+  error?: string;
+  cleanArgs: string[];
 }
 
 /**
- * Normalizes resource name using alias map
+ * Extracts and validates output flags (-o, --output, -o=, --output=)
  */
-function normalizeResource(resource: string): string | null {
-  const lower = resource.toLowerCase();
-  return RESOURCE_ALIASES[lower] || null;
+function extractFlags(tokens: string[]): ParsedFlags {
+  const cleanArgs: string[] = [];
+  let outputFormat: OutputFormat | undefined;
+
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+
+    // Case 1: -o=format or --output=format
+    if (token.startsWith("-o=") || token.startsWith("--output=")) {
+      const parts = token.split("=");
+      const val = parts[1]?.toLowerCase();
+      if (!val) {
+        return { error: `error: flag needs an argument: 'o' in ${token}`, cleanArgs: [] };
+      }
+      if (!isValidFormat(val)) {
+        return { error: `error: unknown output format "${val}". Valid formats: table, wide, yaml, json, name`, cleanArgs: [] };
+      }
+      outputFormat = val as OutputFormat;
+      continue;
+    }
+
+    // Case 2: -o format or --output format
+    if (token === "-o" || token === "--output") {
+      if (i + 1 >= tokens.length || tokens[i + 1].startsWith("-")) {
+        return { error: `error: flag needs an argument: 'o' in ${token}`, cleanArgs: [] };
+      }
+      i++;
+      const val = tokens[i].toLowerCase();
+      if (!isValidFormat(val)) {
+        return { error: `error: unknown output format "${val}". Valid formats: table, wide, yaml, json, name`, cleanArgs: [] };
+      }
+      outputFormat = val as OutputFormat;
+      continue;
+    }
+
+    // Check for other unknown flags
+    if (token.startsWith("-") && token.length > 1) {
+      const suggestion = token.includes("out") || token.startsWith("-o") ? " Did you mean --output?" : "";
+      return { error: `error: unknown flag: ${token}.${suggestion}`, cleanArgs: [] };
+    }
+
+    cleanArgs.push(token);
+  }
+
+  return { outputFormat, cleanArgs };
+}
+
+function isValidFormat(format: string): boolean {
+  return ["table", "wide", "yaml", "json", "name"].includes(format);
 }
 
 /**
@@ -75,19 +130,19 @@ export function executeCommand(rawInput: string, data: PortfolioData): CommandRe
     };
   }
 
-  const tokens = tokenize(rawInput);
+  const tokens = tokenizeInput(rawInput);
   if (tokens.length === 0) {
     return { type: "text", content: "" };
   }
 
   const firstToken = tokens[0].toLowerCase();
 
-  // Handle top-level clear
+  // Top-level clear
   if (firstToken === "clear") {
     return { type: "clear" };
   }
 
-  // Handle top-level help
+  // Top-level help
   if (firstToken === "help") {
     return getHelpOutput();
   }
@@ -107,9 +162,28 @@ export function executeCommand(rawInput: string, data: PortfolioData): CommandRe
     };
   }
 
-  const subCommand = tokens[1].toLowerCase();
+  const secondToken = tokens[1].toLowerCase();
 
-  switch (subCommand) {
+  // Check help flag
+  if (secondToken === "--help" || secondToken === "-h" || secondToken === "help") {
+    return getHelpOutput();
+  }
+
+  // Check version command
+  if (secondToken === "version") {
+    return getVersionOutput();
+  }
+
+  // Check for unsupported / destructive verbs
+  if (UNSUPPORTED_VERBS[secondToken]) {
+    return {
+      type: "error",
+      message: `error: "${secondToken}" is not available in this portfolio simulation.\nThis terminal is read-only and runs no real cluster operations.\nTry: kubectl get projects, kubectl describe profile, help`,
+    };
+  }
+
+  // Dispatch supported verbs
+  switch (secondToken) {
     case "get":
       return handleGet(tokens.slice(2), data);
     case "describe":
@@ -119,8 +193,6 @@ export function executeCommand(rawInput: string, data: PortfolioData): CommandRe
       return handleLogs(tokens.slice(2), data);
     case "explain":
       return handleExplain(tokens.slice(2));
-    case "help":
-      return getHelpOutput();
     case "clear":
       return { type: "clear" };
     default:
@@ -132,37 +204,244 @@ export function executeCommand(rawInput: string, data: PortfolioData): CommandRe
 }
 
 /**
- * Handles kubectl get <resource>
+ * Handles kubectl get <resource> [-o format]
  */
-function handleGet(args: string[], data: PortfolioData): CommandResult {
-  if (args.length === 0) {
+function handleGet(rawArgs: string[], data: PortfolioData): CommandResult {
+  const { outputFormat = "table", error, cleanArgs } = extractFlags(rawArgs);
+
+  if (error) {
+    return { type: "error", message: error };
+  }
+
+  if (cleanArgs.length === 0) {
+    const validList = Object.keys(SUPPORTED_RESOURCES).join(", ");
     return {
       type: "error",
-      message: `error: You must specify the type of resource to get.
-
-Available resources:
-${AVAILABLE_RESOURCES.join(", ")}`,
+      message: `error: You must specify the type of resource to get.\n\nAvailable resources:\n${validList}`,
     };
   }
 
-  const rawResource = args[0];
-  const canonical = normalizeResource(rawResource);
+  const rawResource = cleanArgs[0];
+  const canonical = resolveResource(rawResource);
 
   if (!canonical) {
+    const validList = Object.keys(SUPPORTED_RESOURCES).join(", ");
     return {
       type: "error",
-      message: `error: the server doesn't have a resource type "${rawResource}"
-
-Available resources:
-${AVAILABLE_RESOURCES.join(", ")}`,
+      message: `error: the server doesn't have a resource type "${rawResource}"\n\nAvailable resources:\n${validList}`,
     };
   }
 
+  const resourceDef = SUPPORTED_RESOURCES[canonical];
+
+  // Validate format against resource matrix
+  if (!resourceDef.supportedFormats.includes(outputFormat)) {
+    return {
+      type: "error",
+      message: `error: unable to match a printer for format "${outputFormat}" on resource "${canonical}". Supported formats: ${resourceDef.supportedFormats.join(", ")}`,
+    };
+  }
+
+  // Handle name output format
+  if (outputFormat === "name") {
+    return renderNameFormat(canonical, data);
+  }
+
+  // Handle YAML / JSON formats
+  if (outputFormat === "yaml" || outputFormat === "json") {
+    return renderSerializationFormat(canonical, outputFormat, data);
+  }
+
+  // Handle table & wide formats
+  return renderTableFormat(canonical, outputFormat === "wide", data);
+}
+
+/**
+ * Serializes resource as YAML or JSON
+ */
+function renderSerializationFormat(
+  canonical: string,
+  format: "yaml" | "json",
+  data: PortfolioData
+): CodeOutput {
+  let payload: unknown;
+
+  switch (canonical) {
+    case "profile":
+      payload = {
+        apiVersion: "portfolio.kubeops.io/v1",
+        kind: "Profile",
+        metadata: {
+          name: data.profile.name,
+          namespace: data.profile.namespace,
+          cluster: data.profile.cluster,
+        },
+        spec: {
+          role: data.profile.role,
+          location: data.profile.location,
+          status: data.profile.status,
+          specialization: data.profile.specialization,
+          summary: data.profile.summary,
+          links: data.profile.links,
+        },
+      };
+      break;
+    case "skills":
+      payload = {
+        apiVersion: "portfolio.kubeops.io/v1",
+        kind: "SkillList",
+        items: data.skills,
+      };
+      break;
+    case "experience":
+      payload = {
+        apiVersion: "portfolio.kubeops.io/v1",
+        kind: "ExperienceList",
+        items: data.experience,
+      };
+      break;
+    case "projects":
+      payload = {
+        apiVersion: "v1",
+        kind: "PodList",
+        metadata: {
+          note: "Simulated presentation workloads representing verified projects",
+        },
+        items: data.projects.map((p) => ({
+          metadata: {
+            name: p.podName,
+            namespace: data.profile.namespace,
+            node: p.node,
+          },
+          spec: {
+            title: p.title,
+            category: p.category,
+            tech: p.tech,
+            responsibilities: p.responsibilities,
+            challenges: p.challenges,
+            outcomes: p.outcomes,
+            github: p.links.github,
+          },
+          status: {
+            phase: p.status,
+            ready: p.ready,
+            restarts: p.restarts,
+            age: p.age,
+            ip: p.ip,
+          },
+        })),
+      };
+      break;
+    case "education":
+      payload = {
+        apiVersion: "portfolio.kubeops.io/v1",
+        kind: "EducationList",
+        items: data.education,
+      };
+      break;
+    case "certifications":
+      payload = {
+        apiVersion: "portfolio.kubeops.io/v1",
+        kind: "CertificationList",
+        items: [],
+        status: "No resources found in default namespace.",
+      };
+      break;
+    case "contact":
+      payload = {
+        apiVersion: "portfolio.kubeops.io/v1",
+        kind: "ContactList",
+        items: data.contact,
+      };
+      break;
+    case "resume":
+      payload = {
+        apiVersion: "portfolio.kubeops.io/v1",
+        kind: "ResumeArtifact",
+        spec: data.resume,
+      };
+      break;
+    case "all":
+      payload = {
+        apiVersion: "portfolio.kubeops.io/v1",
+        kind: "ClusterSummary",
+        profile: data.profile,
+        workloads: data.projects,
+        experience: data.experience,
+      };
+      break;
+    default:
+      payload = {};
+  }
+
+  const content =
+    format === "yaml"
+      ? serializeYaml(payload)
+      : JSON.stringify(payload, null, 2);
+
+  return {
+    type: "code",
+    language: format,
+    content,
+  };
+}
+
+/**
+ * Formats resource as resource/name
+ */
+function renderNameFormat(canonical: string, data: PortfolioData): NameOutput {
+  let names: string[] = [];
+
+  switch (canonical) {
+    case "profile":
+      names = [`profile/${data.profile.name.toLowerCase().replace(/\s+/g, "-")}`];
+      break;
+    case "skills":
+      names = data.skills.map((s) => `skill/${s.name.toLowerCase().replace(/[\s/]+/g, "-")}`);
+      break;
+    case "experience":
+      names = data.experience.map((e) => `experience/${e.id}`);
+      break;
+    case "projects":
+      names = data.projects.map((p) => `pod/${p.podName}`);
+      break;
+    case "education":
+      names = data.education.map((e) => `education/${e.degree.toLowerCase().replace(/\s+/g, "-")}`);
+      break;
+    case "certifications":
+      names = [];
+      break;
+    case "contact":
+      names = data.contact.map((c) => `contact/${c.name.toLowerCase().replace(/[\s()]+/g, "-")}`);
+      break;
+    case "resume":
+      names = [`resume/${data.resume.fileName.toLowerCase()}`];
+      break;
+    default:
+      names = [];
+  }
+
+  return {
+    type: "name",
+    resource: canonical,
+    names,
+  };
+}
+
+/**
+ * Formats resource as standard or wide table
+ */
+function renderTableFormat(
+  canonical: string,
+  isWide: boolean,
+  data: PortfolioData
+): TableOutput | AllOutput {
   switch (canonical) {
     case "profile":
       return {
         type: "table",
         resource: "profile",
+        isWide,
         headers: ["NAME", "ROLE", "LOCATION", "CLUSTER", "STATUS"],
         rows: [
           [
@@ -173,31 +452,81 @@ ${AVAILABLE_RESOURCES.join(", ")}`,
             data.profile.status,
           ],
         ],
-        footer: `NAMESPACE: ${data.profile.namespace} | SUMMARY: ${data.profile.summary.slice(0, 85)}...`,
+        footer: `NAMESPACE: ${data.profile.namespace}\nSUMMARY: ${data.profile.summary}`,
       };
 
     case "skills":
+      if (isWide) {
+        return {
+          type: "table",
+          resource: "skills",
+          isWide: true,
+          headers: ["NAME", "CATEGORY", "LEVEL", "STATUS"],
+          rows: data.skills.map((s) => [s.name, s.category, s.level, s.status]),
+          footer: `Total verified skills: ${data.skills.length} (7 categories, production proficiency indicated)`,
+        };
+      }
       return {
         type: "table",
         resource: "skills",
-        headers: ["NAME", "CATEGORY", "STATUS", "LEVEL"],
-        rows: data.skills.map((s) => [s.name, s.category, s.status, s.level]),
-        footer: `Total verified skills: ${data.skills.length} (Active across 7 categories)`,
+        isWide: false,
+        headers: ["NAME", "CATEGORY", "STATUS"],
+        rows: data.skills.map((s) => [s.name, s.category, s.status]),
+        footer: `Total verified skills: ${data.skills.length} (Tip: use -o wide for proficiency)`,
       };
 
     case "experience":
+      if (isWide) {
+        return {
+          type: "table",
+          resource: "experience",
+          isWide: true,
+          headers: ["COMPANY", "ROLE", "RANGE", "LOCATION", "STATUS", "TECHNOLOGIES"],
+          rows: data.experience.map((e) => [
+            e.company,
+            e.role,
+            e.range,
+            e.location,
+            e.status,
+            e.technologies.slice(0, 5).join(", "),
+          ]),
+          footer: 'Tip: Use "kubectl describe experience <company>" for responsibilities and impact.',
+        };
+      }
       return {
         type: "table",
         resource: "experience",
+        isWide: false,
         headers: ["COMPANY", "ROLE", "RANGE", "LOCATION", "STATUS"],
         rows: data.experience.map((e) => [e.company, e.role, e.range, e.location, e.status]),
-        footer: 'Tip: Use "kubectl describe experience <company>" for in-depth responsibilities and outcomes.',
+        footer: 'Tip: Use "kubectl describe experience <company>" for in-depth responsibilities.',
       };
 
     case "projects":
+      if (isWide) {
+        return {
+          type: "table",
+          resource: "projects",
+          isWide: true,
+          headers: ["NAME", "POD", "READY", "STATUS", "RESTARTS", "AGE", "IP", "NODE", "TECH"],
+          rows: data.projects.map((p) => [
+            p.title,
+            p.podName,
+            p.ready,
+            p.status,
+            p.restarts.toString(),
+            p.age,
+            p.ip,
+            p.node,
+            p.tech.join(", "),
+          ]),
+          footer: 'Simulated pod status values. Tip: Use "kubectl describe pod <name>" or "kubectl logs <name>".',
+        };
+      }
       return {
         type: "table",
         resource: "projects",
+        isWide: false,
         headers: ["NAME", "POD", "STATUS", "READY", "RESTARTS", "AGE"],
         rows: data.projects.map((p) => [
           p.title,
@@ -207,56 +536,14 @@ ${AVAILABLE_RESOURCES.join(", ")}`,
           p.restarts.toString(),
           p.age,
         ]),
-        footer: 'Tip: Use "kubectl describe pod <project-name>" or "kubectl logs <project-name>".',
-      };
-
-    case "pods":
-      return {
-        type: "table",
-        resource: "pods",
-        headers: ["NAME", "READY", "STATUS", "RESTARTS", "AGE", "IP", "NODE"],
-        rows: data.projects.map((p) => [
-          p.podName,
-          p.ready,
-          p.status,
-          p.restarts.toString(),
-          p.age,
-          p.ip,
-          p.node,
-        ]),
-        footer: `All pods healthy in namespace "${data.profile.namespace}".`,
-      };
-
-    case "services":
-      return {
-        type: "table",
-        resource: "services",
-        headers: ["NAME", "TYPE", "CLUSTER-IP", "EXTERNAL-IP", "PORT(S)", "AGE"],
-        rows: data.services.map((s) => [
-          s.name,
-          s.type,
-          s.clusterIp,
-          s.externalIp,
-          s.ports,
-          s.age,
-        ]),
-        footer: `Active service network in cluster "${data.profile.cluster}".`,
-      };
-
-    case "certifications":
-      // Rule 0: No invented certifications. Graceful empty state.
-      return {
-        type: "table",
-        resource: "certifications",
-        headers: ["NAME", "ISSUER", "STATUS", "VERIFIED"],
-        rows: [],
-        footer: 'No resources found in default namespace.',
+        footer: 'Simulated pod status values. Tip: Use -o wide for node, IP, and tech details.',
       };
 
     case "education":
       return {
         type: "table",
         resource: "education",
+        isWide,
         headers: ["DEGREE", "INSTITUTION", "LOCATION", "PERIOD", "STATUS"],
         rows: data.education.map((edu) => [
           edu.degree,
@@ -267,10 +554,21 @@ ${AVAILABLE_RESOURCES.join(", ")}`,
         ]),
       };
 
+    case "certifications":
+      return {
+        type: "table",
+        resource: "certifications",
+        isWide,
+        headers: ["NAME", "ISSUER", "STATUS", "VERIFIED"],
+        rows: [],
+        footer: "No resources found in default namespace.",
+      };
+
     case "contact":
       return {
         type: "table",
         resource: "contact",
+        isWide,
         headers: ["CHANNEL", "VALUE", "URL"],
         rows: data.contact.map((c) => [c.name, c.value, c.url]),
         footer: `Direct communication channels for ${data.profile.name}.`,
@@ -280,6 +578,7 @@ ${AVAILABLE_RESOURCES.join(", ")}`,
       return {
         type: "table",
         resource: "resume",
+        isWide,
         headers: ["FILE", "FORMAT", "SIZE", "UPDATED", "URI"],
         rows: [
           [
@@ -341,8 +640,11 @@ ${AVAILABLE_RESOURCES.join(", ")}`,
 
     default:
       return {
-        type: "error",
-        message: `error: unknown resource type "${canonical}".`,
+        type: "table",
+        resource: canonical,
+        headers: ["RESOURCE"],
+        rows: [],
+        footer: "No resources found.",
       };
   }
 }
@@ -350,20 +652,15 @@ ${AVAILABLE_RESOURCES.join(", ")}`,
 /**
  * Handles kubectl describe profile | experience <company> | pod <project-name>
  */
-function handleDescribe(args: string[], data: PortfolioData): CommandResult {
-  if (args.length === 0) {
+function handleDescribe(tokens: string[], data: PortfolioData): CommandResult {
+  if (tokens.length === 0) {
     return {
       type: "error",
-      message: `error: You must specify the type of resource to describe.
-
-Valid targets:
-- kubectl describe profile
-- kubectl describe experience <company>
-- kubectl describe pod <project-name>`,
+      message: `error: You must specify the type of resource to describe.\n\nValid targets:\n- kubectl describe profile\n- kubectl describe experience <company>\n- kubectl describe pod <project-name>`,
     };
   }
 
-  const targetType = args[0].toLowerCase();
+  const targetType = tokens[0].toLowerCase();
 
   if (targetType === "profile" || targetType === "prof") {
     return {
@@ -376,7 +673,7 @@ Valid targets:
         Cluster: data.profile.cluster,
         Role: data.profile.role,
         Location: data.profile.location,
-        Status: data.profile.status,
+        Status: `${data.profile.status} (Simulated presentation value)`,
         Website: data.profile.website,
         Email: data.profile.email,
       },
@@ -402,8 +699,8 @@ Valid targets:
     };
   }
 
-  if (targetType === "experience" || targetType === "exp" || targetType === "job") {
-    if (args.length < 2) {
+  if (targetType === "experience" || targetType === "exp" || targetType === "job" || targetType === "jobs") {
+    if (tokens.length < 2) {
       const validCompanies = data.experience.map((e) => e.company).join(", ");
       return {
         type: "error",
@@ -411,41 +708,50 @@ Valid targets:
       };
     }
 
-    const query = args.slice(1).join(" ").toLowerCase();
-    const matched = data.experience.find(
+    const query = tokens.slice(1).join(" ").toLowerCase();
+    const matched = data.experience.filter(
       (e) =>
         e.company.toLowerCase() === query ||
         e.company.toLowerCase().includes(query) ||
         e.id.toLowerCase().includes(query)
     );
 
-    if (!matched) {
+    if (matched.length === 0) {
       const validCompanies = data.experience.map((e) => e.company).join(", ");
       return {
         type: "error",
-        message: `Error from server (NotFound): experience "${args.slice(1).join(" ")}" not found.\n\nValid companies:\n${validCompanies}`,
+        message: `Error from server (NotFound): experience "${tokens.slice(1).join(" ")}" not found.\n\nValid companies:\n${validCompanies}`,
       };
     }
 
+    if (matched.length > 1) {
+      const candidateNames = matched.map((e) => e.company).join(", ");
+      return {
+        type: "error",
+        message: `error: "${tokens.slice(1).join(" ")}" is ambiguous. Multiple matching companies found:\n${candidateNames}`,
+      };
+    }
+
+    const company = matched[0];
     return {
       type: "describe",
       kind: "Experience",
-      name: matched.company,
+      name: company.company,
       metadata: {
-        Company: matched.company,
-        Role: matched.role,
-        Range: matched.range,
-        Location: matched.location,
-        Status: matched.status,
+        Company: company.company,
+        Role: company.role,
+        Range: company.range,
+        Location: company.location,
+        Status: company.status,
       },
       sections: [
         {
           title: "Technologies",
-          items: matched.technologies,
+          items: company.technologies,
         },
         {
           title: "Responsibilities & Impact",
-          items: matched.descriptions,
+          items: company.descriptions,
         },
       ],
     };
@@ -458,7 +764,7 @@ Valid targets:
     targetType === "project" ||
     targetType === "projects"
   ) {
-    if (args.length < 2) {
+    if (tokens.length < 2) {
       const validPods = data.projects.map((p) => p.podName).join(", ");
       return {
         type: "error",
@@ -466,8 +772,8 @@ Valid targets:
       };
     }
 
-    const query = args.slice(1).join(" ").toLowerCase();
-    const matched = data.projects.find(
+    const query = tokens.slice(1).join(" ").toLowerCase();
+    const matched = data.projects.filter(
       (p) =>
         p.podName.toLowerCase() === query ||
         p.podName.toLowerCase().includes(query) ||
@@ -475,55 +781,64 @@ Valid targets:
         p.id.toLowerCase().includes(query)
     );
 
-    if (!matched) {
+    if (matched.length === 0) {
       const validPods = data.projects.map((p) => p.podName).join(", ");
       return {
         type: "error",
-        message: `Error from server (NotFound): pods "${args.slice(1).join(" ")}" not found.\n\nValid pods:\n${validPods}`,
+        message: `Error from server (NotFound): pods "${tokens.slice(1).join(" ")}" not found.\n\nValid pods:\n${validPods}`,
       };
     }
 
+    if (matched.length > 1) {
+      const candidateNames = matched.map((p) => p.podName).join(", ");
+      return {
+        type: "error",
+        message: `error: "${tokens.slice(1).join(" ")}" is ambiguous. Multiple matching pods found:\n${candidateNames}`,
+      };
+    }
+
+    const pod = matched[0];
     return {
       type: "describe",
       kind: "Pod",
-      name: matched.podName,
+      name: pod.podName,
       metadata: {
-        Name: matched.podName,
+        Name: pod.podName,
         Namespace: data.profile.namespace,
         Priority: "0",
-        Node: matched.node,
-        IP: matched.ip,
-        Status: matched.status,
-        Ready: matched.ready,
-        Restarts: matched.restarts.toString(),
-        Age: matched.age,
-        Project: matched.title,
+        Node: pod.node,
+        IP: pod.ip,
+        Status: `${pod.status} (Simulated presentation value)`,
+        Ready: pod.ready,
+        Restarts: pod.restarts.toString(),
+        Age: pod.age,
+        Project: pod.title,
       },
       sections: [
         {
           title: "Technologies",
-          items: matched.tech,
+          items: pod.tech,
         },
         {
-          title: "Architecture & Description",
-          items: [matched.description],
+          title: "Architecture & Scope",
+          items: [pod.description],
         },
         {
           title: "Key Responsibilities",
-          items: [matched.responsibilities],
+          items: [pod.responsibilities],
         },
         {
           title: "Technical Challenges Solved",
-          items: [matched.challenges],
+          items: [pod.challenges],
         },
         {
           title: "Measurable Outcomes",
-          items: [matched.outcomes],
+          items: [pod.outcomes],
         },
         {
           title: "Source Repository",
           fields: {
-            GitHub: matched.links.github,
+            GitHub: pod.links.github,
           },
         },
       ],
@@ -539,8 +854,8 @@ Valid targets:
 /**
  * Handles kubectl logs <project-name>
  */
-function handleLogs(args: string[], data: PortfolioData): CommandResult {
-  if (args.length === 0) {
+function handleLogs(tokens: string[], data: PortfolioData): CommandResult {
+  if (tokens.length === 0) {
     const validPods = data.projects.map((p) => p.podName).join(", ");
     return {
       type: "error",
@@ -548,11 +863,10 @@ function handleLogs(args: string[], data: PortfolioData): CommandResult {
     };
   }
 
-  // Handle prefix like "pod/infra-automation-sec"
-  const rawTarget = args[0].replace(/^pod\//i, "");
+  const rawTarget = tokens[0].replace(/^pod\//i, "");
   const query = rawTarget.toLowerCase();
 
-  const matched = data.projects.find(
+  const matched = data.projects.filter(
     (p) =>
       p.podName.toLowerCase() === query ||
       p.podName.toLowerCase().includes(query) ||
@@ -560,7 +874,7 @@ function handleLogs(args: string[], data: PortfolioData): CommandResult {
       p.id.toLowerCase().includes(query)
   );
 
-  if (!matched) {
+  if (matched.length === 0) {
     const validPods = data.projects.map((p) => p.podName).join(", ");
     return {
       type: "error",
@@ -568,18 +882,35 @@ function handleLogs(args: string[], data: PortfolioData): CommandResult {
     };
   }
 
+  if (matched.length > 1) {
+    const candidateNames = matched.map((p) => p.podName).join(", ");
+    return {
+      type: "error",
+      message: `error: "${rawTarget}" is ambiguous. Multiple matching pods found:\n${candidateNames}`,
+    };
+  }
+
+  const pod = matched[0];
+  if (!pod.logs || pod.logs.length === 0) {
+    return {
+      type: "logs",
+      podName: pod.podName,
+      lines: ["[info] No documented log stream available for this workload."],
+    };
+  }
+
   return {
     type: "logs",
-    podName: matched.podName,
-    lines: matched.logs,
+    podName: pod.podName,
+    lines: pod.logs,
   };
 }
 
 /**
- * Handles kubectl explain profile
+ * Handles kubectl explain <resource>
  */
-function handleExplain(args: string[]): CommandResult {
-  if (args.length === 0 || args[0].toLowerCase() !== "profile") {
+function handleExplain(tokens: string[]): CommandResult {
+  if (tokens.length === 0) {
     return {
       type: "text",
       isExplain: true,
@@ -594,43 +925,64 @@ AVAILABLE TOP-LEVEL RESOURCES:
   skills            Verified technical competencies across 7 categories
   experience        Historical industry roles, companies, and impact
   projects          Workloads, architecture, challenges, and outcomes
-  certifications    Verified credentials (shows graceful empty state)
   education         Academic background and degree credentials
+  certifications    Verified credentials status (graceful empty state)
   contact           Direct communication and social profiles
-  resume            PDF artifact verification and metadata`,
+  resume            PDF artifact verification and metadata
+
+Use "kubectl explain <resource>" for detailed field descriptions.
+Note: Project STATUS and pod phase values are simulated presentation representations.`,
     };
   }
+
+  const rawResource = tokens[0].toLowerCase();
+  const canonical = resolveResource(rawResource);
+
+  if (!canonical || !SUPPORTED_RESOURCES[canonical]) {
+    const validResources = Object.keys(SUPPORTED_RESOURCES).join(", ");
+    return {
+      type: "error",
+      message: `error: couldn't find resource "${tokens[0]}".\n\nValid resources to explain:\n${validResources}`,
+    };
+  }
+
+  const resDef = SUPPORTED_RESOURCES[canonical];
+  const fieldLines = Object.entries(resDef.explainFields).map(
+    ([k, v]) => `  ${k.padEnd(22)} ${v}`
+  );
 
   return {
     type: "text",
     isExplain: true,
-    content: `KIND:       Profile
+    content: `KIND:       ${resDef.explainKind}
 VERSION:    portfolio.kubeops.io/v1
-RESOURCE:   profile <Object>
+RESOURCE:   ${canonical} <Object>
 
 DESCRIPTION:
-  Profile encapsulates Mohammed Sab Sagari's engineering identity, specialized
-  domains, and operations telemetry.
+  ${resDef.description}.
+  (Note: STATUS values are simulated presentation representations).
 
 FIELDS:
-  metadata          <Object>
-    name            <string> - Full legal name
-    namespace       <string> - Cluster namespace (default: portfolio)
-    cluster         <string> - Production cluster identifier
-  spec              <Object>
-    role            <string> - Primary engineering discipline
-    location        <string> - Geographic location
-    specialization  <[]string> - Core infrastructure competencies
-    summary         <string> - Professional profile overview
-    experience      <[]Object> - Timeline of industry roles
-    skills          <[]Object> - Technology matrix and proficiency
-    projects        <[]Object> - Workload pods and architectures
-    contact         <Object> - Direct contact channels and links`,
+${fieldLines.join("\n")}`,
   };
 }
 
 /**
- * Generates formatted help output
+ * Handles kubectl version
+ */
+function getVersionOutput(): TextOutput {
+  return {
+    type: "text",
+    isVersion: true,
+    content: `Client Version: client v1.31.2 (simulated)
+Kustomize Version: v5.4.3
+Server Version: v1.31.2 (portfolio-demo)
+Note: Simulated portfolio environment — not a live Kubernetes cluster.`,
+  };
+}
+
+/**
+ * Generates formatted help output from catalog
  */
 function getHelpOutput(): TextOutput {
   return {
@@ -638,36 +990,32 @@ function getHelpOutput(): TextOutput {
     isHelp: true,
     content: `Kubectl Portfolio CLI — Commands Reference:
 
-RESOURCES:
-  kubectl get profile              Display professional overview & cluster state
-  kubectl get skills               List verified skills across all categories
-  kubectl get experience           View employment history & company roles
-  kubectl get projects             Display real-world projects & workloads
-  kubectl get pods                 View projects represented as cluster pods
-  kubectl get services             List infrastructure service network
-  kubectl get education            View academic credentials & universities
-  kubectl get certifications       Check verified certifications status
-  kubectl get contact              Show direct email and social profiles
-  kubectl get resume               Inspect resume PDF metadata and location
-  kubectl get all                  Consolidated summary of all workloads
+CORE WORKLOADS:
+  kubectl get profile [-o yaml|json|name]     Overview & cluster state
+  kubectl get skills [-o wide|yaml|json|name] Verified technical capabilities
+  kubectl get experience [-o wide|yaml|json]  Employment history & company roles
+  kubectl get projects [-o wide|yaml|json]    Real-world workloads as pods
+  kubectl get all                             Consolidated summary of workloads
 
-DETAILED INSPECTION:
-  kubectl describe profile                 Full profile specification & telemetry
-  kubectl describe experience <company>    Deep-dive into role responsibilities
-  kubectl describe pod <project-name>      Comprehensive workload architecture
-  kubectl logs <project-name>              View operational log stream for pod
-  kubectl explain profile                  Inspect portfolio schema and fields
+INSPECTION & LOGS:
+  kubectl describe profile                    Profile specification & verified links
+  kubectl describe experience <company>       Deep-dive into role responsibilities
+  kubectl describe pod <project-name>         Workload architecture & outcomes
+  kubectl logs <project-name>                 Documented operational log history
+  kubectl explain <resource>                  Schema documentation & field types
 
-SYSTEM:
-  help                             Display this reference guide
-  clear (or Ctrl+L)                Clear terminal output buffer
+SYSTEM & UTILITIES:
+  kubectl version                             Simulated client/server version
+  help | kubectl --help                       Command reference guide
+  clear (or Ctrl+L)                           Clear terminal screen buffer
+
+OUTPUT FORMATS (-o, --output):
+  table (default), wide (extended columns), yaml, json, name
 
 ALIASES:
-  k -> kubectl  |  po -> pods  |  svc -> services  |  exp -> experience  |  proj -> projects
+  k -> kubectl  |  po/pod -> projects  |  svc -> skills  |  exp -> experience
 
-TIPS:
-  • Press Tab for command, resource, company, and pod auto-completion.
-  • Press Up / Down arrows to traverse command history.
-  • Partial and case-insensitive matching is supported for pod & company names.`,
+NOTE:
+  Simulated portfolio environment — not a live Kubernetes cluster. Read-only terminal.`,
   };
 }

@@ -1,110 +1,83 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { COMMAND_CATALOG } from "../../lib/terminal/commandCatalog.ts";
+import type { CommandCategory } from "../../lib/terminal/commandCatalog.ts";
 
 interface QuickCommandsProps {
   onRunCommand: (command: string) => void;
 }
 
-interface CommandChip {
-  command: string;
-  label: string;
-  description: string;
-  accent?: "green" | "cyan" | "blue";
-}
-
-const QUICK_COMMANDS: CommandChip[] = [
-  {
-    command: "kubectl get profile",
-    label: "get profile",
-    description: "Display executive summary & cluster status",
-    accent: "green",
-  },
-  {
-    command: "kubectl get skills",
-    label: "get skills",
-    description: "List verified technical capabilities across 7 categories",
-    accent: "cyan",
-  },
-  {
-    command: "kubectl get experience",
-    label: "get experience",
-    description: "View production roles at Shaurya, LetsReflect, and MKCL",
-    accent: "blue",
-  },
-  {
-    command: "kubectl get projects",
-    label: "get projects",
-    description: "Inspect automation, monitoring, and k8s workloads",
-    accent: "green",
-  },
-  {
-    command: "kubectl get pods",
-    label: "get pods",
-    description: "View real projects simulated as cluster pods",
-    accent: "cyan",
-  },
-  {
-    command: "kubectl get services",
-    label: "get services",
-    description: "List cluster networking and telemetry services",
-    accent: "blue",
-  },
-  {
-    command: "kubectl describe profile",
-    label: "describe profile",
-    description: "Deep dive into full profile specification and links",
-    accent: "green",
-  },
-  {
-    command: "kubectl get contact",
-    label: "get contact",
-    description: "Direct email and professional social channels",
-    accent: "cyan",
-  },
-  {
-    command: "kubectl get resume",
-    label: "get resume",
-    description: "Inspect verified resume PDF metadata",
-    accent: "blue",
-  },
+const CATEGORIES: CommandCategory[] = [
+  "Profile",
+  "Skills",
+  "Experience",
+  "Projects",
+  "Advanced Output",
+  "Help & Discovery",
 ];
 
 export const QuickCommands: React.FC<QuickCommandsProps> = ({ onRunCommand }) => {
+  const [activeCategory, setActiveCategory] = useState<CommandCategory>("Profile");
+
+  // Filter commands having quickCommand definition for current category
+  const activeChips = COMMAND_CATALOG.filter(
+    (cmd) => cmd.quickCommand && cmd.quickCommand.group === activeCategory
+  ).sort((a, b) => (a.quickCommand?.priority || 0) - (b.quickCommand?.priority || 0));
+
   return (
-    <div className="w-full mt-4 space-y-2">
-      <div className="flex items-center justify-between text-xs font-mono text-slate-400 px-1">
-        <span className="flex items-center gap-1.5 font-medium">
-          <span className="text-emerald-400">⚡</span> Quick Commands
-        </span>
-        <span className="text-[11px] text-slate-400 hidden sm:inline">
-          Click any chip to simulate command in terminal
-        </span>
+    <div className="w-full mt-3 space-y-2 font-mono">
+      {/* Category Tabs Header */}
+      <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-800/80 pb-1.5">
+        <div className="flex items-center gap-1.5 text-xs text-slate-300">
+          <span className="text-emerald-400">⚡</span>
+          <span className="font-semibold text-white">Quick Commands</span>
+        </div>
+
+        {/* Tab Switcher */}
+        <div
+          role="tablist"
+          aria-label="Quick command category tabs"
+          className="flex flex-wrap gap-1 text-xs"
+        >
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              role="tab"
+              type="button"
+              aria-selected={activeCategory === cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-2 py-0.5 rounded text-xs transition-colors cursor-pointer ${
+                activeCategory === cat
+                  ? "bg-slate-800 text-emerald-300 font-medium border border-slate-700"
+                  : "text-slate-300 hover:text-white hover:bg-slate-900"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 items-center" role="toolbar" aria-label="Quick kubectl commands">
-        {QUICK_COMMANDS.map((chip, idx) => {
-          let accentClasses = "border-slate-800 text-slate-300 hover:border-emerald-500/50 hover:text-emerald-300 hover:bg-emerald-950/20";
-          if (chip.accent === "cyan") {
-            accentClasses = "border-slate-800 text-slate-300 hover:border-cyan-500/50 hover:text-cyan-300 hover:bg-cyan-950/20";
-          } else if (chip.accent === "blue") {
-            accentClasses = "border-slate-800 text-slate-300 hover:border-sky-500/50 hover:text-sky-300 hover:bg-sky-950/20";
-          }
-
-          return (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => onRunCommand(chip.command)}
-              title={chip.description}
-              aria-label={`Execute: ${chip.command} - ${chip.description}`}
-              className={`px-3 py-1.5 rounded-md font-mono text-xs border bg-slate-900/60 transition-all duration-200 cursor-pointer shadow-sm active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 ${accentClasses}`}
-            >
-              <span className="text-slate-500 mr-1">$</span>
-              <span className="font-medium">{chip.label}</span>
-            </button>
-          );
-        })}
+      {/* Chips Container */}
+      <div
+        role="toolbar"
+        aria-label={`${activeCategory} commands`}
+        className="flex flex-wrap gap-1.5 items-center"
+      >
+        {activeChips.map((cmd) => (
+          <button
+            key={cmd.id}
+            type="button"
+            onClick={() => onRunCommand(cmd.exampleString)}
+            title={cmd.shortDescription}
+            aria-label={`Execute: ${cmd.exampleString} - ${cmd.shortDescription}`}
+            className="px-2.5 py-1 rounded text-xs border border-slate-800 bg-slate-900/90 text-slate-200 hover:border-emerald-500/50 hover:text-emerald-300 hover:bg-emerald-950/20 active:scale-95 transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-1 focus:ring-emerald-400"
+          >
+            <span className="text-slate-400 mr-1">$</span>
+            <span className="font-medium text-slate-100">{cmd.quickCommand?.label || cmd.exampleString}</span>
+          </button>
+        ))}
       </div>
     </div>
   );
