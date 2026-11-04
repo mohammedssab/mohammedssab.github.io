@@ -1,0 +1,162 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{lmodern}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\footskip}{0.4in}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\sloppy
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generated pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{center}
+    {\Huge \textbf{Mohammed Sab Sagari}} \\ \vspace{2pt}
+    {\large \textbf{DevOps Engineer $|$ Kubernetes \& Platform Engineering}} \\ \vspace{2pt}
+    \small \href{mailto:mdsab123sagari@gmail.com}{\underline{mdsab123sagari@gmail.com}} $|$ 
+    \href{https://www.linkedin.com/in/mohammedsab/}{\underline{linkedin.com/in/mohammedsab}} $|$
+    \href{https://github.com/mohammedssab}{\underline{github.com/mohammedssab}} $|$
+    \href{https://mohammedssab.github.io}{\underline{mohammedssab.github.io}} $|$
+    Pune, India
+\end{center}
+
+%-----------PROFESSIONAL SUMMARY-----------
+\section{Professional Summary}
+\small{DevOps Engineer with 8+ years in Linux administration and Kubernetes platform engineering. Run production and staging Kubernetes clusters (Talos Linux, Proxmox) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.}
+
+%-----------EXPERIENCE-----------
+\section{Professional Experience}
+\resumeSubHeadingListStart
+
+\resumeSubheading
+{Shaurya Technosoft Pvt. Ltd.}{Mar. 2026 -- Present}
+{DevOps Engineer}{Pune, IN}
+\resumeItemListStart
+\resumeItem{Design and maintain CI/CD pipelines across \textbf{GitHub Actions} and \textbf{Gitea Actions} for 15+ microservices; cut build and test durations by \textbf{65\%} by provisioning dedicated runners with persistent Gradle and BuildKit layer caching.}
+\resumeItem{Manage 3 Kubernetes clusters (production and staging) across bare-metal, Proxmox, and immutable \textbf{Talos Linux} (30+ nodes); standardize declarative GitOps rollouts using \textbf{Flux CD}, \textbf{Argo CD}, and \textbf{Kustomize} overlays.}
+\resumeItem{Configure \textbf{Kubernetes Gateway API}, implementing Layer 7 ingress routing, TCP listeners for IoT telemetry traffic, PROXY protocol handling, and cert-manager automated TLS certificate lifecycle management.}
+\resumeItem{Harden container security by migrating API and client workloads to \textbf{Chainguard Wolfi} base images running as non-root, shrinking image sizes by \textbf{37\%} (215 MB to 134 MB) and reducing critical base-image CVEs.}
+\resumeItem{Optimize Docker build pipelines and package caching by deploying and managing \textbf{APT Cacher NG} proxies, accelerating Ubuntu dependency downloads across development and CI environments.}
+\resumeItem{Migrated secondary Kubernetes cluster from Calico CNI + MetalLB to \textbf{Cilium eBPF}, deploying L2 announcements to deprecate MetalLB and enabling deep packet observability with \textbf{Hubble}.}
+\resumeItem{Deploy and operate centralized observability across 20+ servers using \textbf{Prometheus}, \textbf{Grafana}, native \textbf{Grafana Alloy} agents, and \textbf{Loki}; tune \textbf{Alertmanager} expressions to reduce false-positive alerts and route notifications to \textbf{Microsoft Teams}.}
+\resumeItem{Automate host provisioning, runner deployments, and rolling cluster node upgrades using \textbf{Ansible} playbooks orchestrated via self-service \textbf{Semaphore UI} execution templates.}
+\resumeItem{Administer production \textbf{PostgreSQL} and \textbf{MySQL} databases: user and role management, \textbf{PgBouncer} connection pooling, routine backups, replication checks, and storage volume expansion.}
+\resumeItem{Maintain developer platforms and container security workflows using \textbf{Gitea}, \textbf{Harbor} (with \textbf{Trivy} vulnerability scanning), \textbf{SonarQube}, and \textbf{OpenBao / Vault}, automating repository dependency updates via \textbf{Renovate Bot}.}
+\resumeItem{Troubleshoot production incidents involving database availability, replication, storage capacity, Kubernetes workloads, and application performance.}
+\resumeItemListEnd
+
+\resumeSubheading
+{LetsReflect}{Nov. 2022 -- Feb. 2026}
+{DevOps \& System Administrator}{Pune, IN}
+\resumeItemListStart
+\resumeItem{Administered hybrid Linux infrastructure across \textbf{AWS (EC2, Route 53)} and on-premise Proxmox environments, sustaining \textbf{99.9\%} platform uptime.}
+\resumeItem{Designed and automated \textbf{GitHub Actions} and \textbf{Gitea Actions} CI/CD pipelines, accelerating release cycles from bi-weekly manual rollouts to on-demand daily deployments.}
+\resumeItem{Containerized 10+ monolithic applications into Docker microservices and deployed Kubernetes clusters using \textbf{kubeadm}, \textbf{Helm}, and \textbf{Argo CD}.}
+\resumeItem{Implemented centralized logging and monitoring using \textbf{Prometheus}, \textbf{Grafana}, \textbf{Loki}, and \textbf{Uptime Kuma}, reducing incident detection and diagnosis time.}
+\resumeItem{Hardened application secrets management by deploying \textbf{HashiCorp Vault} with AppRole authentication, centralizing secrets management across container workloads.}
+\resumeItem{Configured reverse proxies using \textbf{Nginx}, automated Let's Encrypt SSL/TLS renewals, and managed edge firewall rules.}
+\resumeItem{Automated routine server provisioning, security patching, and package management using \textbf{Ansible} playbooks and Proxmox virtual machine templates.}
+\resumeItem{Maintained self-hosted engineering toolchains including \textbf{Gitea}, \textbf{SonarQube}, \textbf{Nexus Repository}, \textbf{Harbor}, and \textbf{Vaultwarden}.}
+\resumeItemListEnd
+
+\resumeSubheading
+{Maharashtra Knowledge Corporation Limited (MKCL)}{Sep. 2018 -- Oct. 2022}
+{Information Technology Fellow (Systems Administrator)}{Pune, IN}
+\resumeItemListStart
+\resumeItem{Administered enterprise Linux (RHEL, Ubuntu) and Windows Server environments, supporting educational platforms serving \textbf{100k+ users}.}
+\resumeItem{Configured and tuned \textbf{Apache HTTP}, \textbf{Nginx}, \textbf{Apache Tomcat}, and \textbf{IIS} web application servers.}
+\resumeItem{Managed enterprise databases (\textbf{MySQL}, \textbf{MSSQL}, \textbf{MariaDB}, \textbf{MongoDB}), performing automated backups, role-based access control, and query optimization.}
+\resumeItem{Automated routine server patching, log rotation, and scheduled backup workflows using \textbf{Jenkins}, \textbf{Ansible}, and \textbf{Rundeck}, reducing manual operational overhead.}
+\resumeItem{Diagnosed and resolved system bottlenecks, memory leaks, and network connectivity issues through in-depth OS kernel log analysis and performance profiling.}
+\resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+%-----------TECHNICAL SKILLS-----------
+\section{Technical Skills}
+\begin{itemize}[leftmargin=0.15in, label={}]
+\small{\item{
+\textbf{Kubernetes \& Containers:} Kubernetes, Talos Linux, Docker, Helm, Kustomize, Cilium (eBPF), Hubble, Gateway API, Ingress, cert-manager \\
+\textbf{GitOps \& CI/CD:} Argo CD, Flux CD, GitHub Actions, Gitea Actions, Jenkins, Renovate Bot \\
+\textbf{Configuration \& Automation:} Ansible, Semaphore UI, Proxmox VE, Bash Scripting \\
+\textbf{Cloud:} AWS (EC2, Route 53) \\
+\textbf{Databases \& Storage:} PostgreSQL, PgBouncer, MySQL, MariaDB, MSSQL, MongoDB, Replication, Backup and Recovery \\
+\textbf{Monitoring \& Observability:} Prometheus, Grafana, Grafana Alloy, Loki, Alertmanager, Uptime Kuma \\
+\textbf{Security \& DevSecOps:} HashiCorp Vault, OpenBao, AppRole, Harbor, Trivy, SonarQube, Chainguard Wolfi, Let's Encrypt SSL/TLS \\
+\textbf{Web \& Networking:} Linux Networking, Nginx, Apache, Tomcat, Reverse Proxy, Firewalls \\
+\textbf{Operating Systems:} Ubuntu Server (22.04/24.04/26.04), Debian, Talos Linux, Linux, Windows Server \\
+\textbf{Developer Platforms:} Gitea, Sonatype Nexus Repository, Harbor Registry, Vaultwarden
+}}
+\end{itemize}
+
+%-----------EDUCATION-----------
+\section{Education}
+\resumeSubHeadingListStart
+\resumeSubheading
+{Savitribai Phule Pune University}{Pune, IN}
+{Master of Science in Computer Science (Part-time)}{Sep. 2021 -- Oct. 2023}
+
+\resumeSubheading
+{Yashwantrao Chavan Maharashtra Open University (YCMOU)}{Pune, IN}
+{Bachelor of Science in Computer System Administration}{Aug. 2018 -- Jul. 2021}
+\resumeSubHeadingListEnd
+
+\end{document}

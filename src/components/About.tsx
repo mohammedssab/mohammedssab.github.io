@@ -6,14 +6,14 @@ import { FiTarget } from "react-icons/fi";
 
 const About = () => {
   const recentSkills = [
-    "Kubernetes (Talos Linux & k3s)",
-    "Cilium CNI (eBPF) & Envoy Gateway",
+    "Kubernetes (Talos Linux & Proxmox)",
+    "Cilium CNI (eBPF) & Gateway API",
     "GitOps (FluxCD & Argo CD)",
-    "PostgreSQL HA (Patroni) & TimescaleDB",
+    "PostgreSQL & MySQL (PgBouncer, Backups)",
     "OpenBao & HashiCorp Vault",
     "Grafana Alloy, Prometheus & Loki",
     "CI/CD & Runner Caching (Gitea / GitHub)",
-    "Harbor Registry & Container Security",
+    "Harbor Registry & Chainguard Hardened Containers",
   ];
 
   return (

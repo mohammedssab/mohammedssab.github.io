@@ -13,17 +13,17 @@ const projects = [
     links: { github: "#", external: "#" },
   },
   {
-    title: "High-Scale Telemetry & Database HA",
+    title: "Database Administration & Connection Pooling",
     description:
-      "Scaled stateful infrastructure sustaining ~20,000 records/sec by engineering PostgreSQL HA with Patroni and PgBouncer write-routing, Kafka tuning, and automated TimescaleDB compression policies.",
-    tech: ["PostgreSQL HA", "Patroni", "TimescaleDB", "Grafana Alloy"],
+      "Administered production PostgreSQL and MySQL infrastructure, managing user permissions, connection pooling via PgBouncer, automated backups, replication health checks, and storage volume expansion.",
+    tech: ["PostgreSQL", "MySQL", "PgBouncer", "Grafana Alloy"],
     links: { github: "#", external: "#" },
   },
   {
     title: "Immutable Kubernetes & eBPF Networking",
     description:
-      "Administered production Kubernetes clusters on immutable Talos Linux OS with automated rolling upgrades via Tuppr operator. Executed zero-downtime migration to Cilium CNI with eBPF data path and Envoy Gateway.",
-    tech: ["Kubernetes", "Talos Linux", "Cilium eBPF", "Envoy Gateway"],
+      "Administered production Kubernetes clusters on immutable Talos Linux OS with automated rolling upgrades via Tuppr operator. Executed zero-downtime migration to Cilium CNI with eBPF data path and Gateway API.",
+    tech: ["Kubernetes", "Talos Linux", "Cilium eBPF", "Gateway API"],
     links: { github: "#", external: "#" },
   },
 ];
