@@ -19,7 +19,7 @@ DevOps Engineer with 8+ years in Linux administration and multi-cluster Kubernet
 - Configure **Kubernetes Gateway API**, implementing Layer 7 ingress routing, TCP listeners for IoT telemetry traffic, PROXY protocol handling, and cert-manager automated TLS certificate lifecycle management.
 - Harden container security by migrating API and client workloads to **Chainguard Wolfi** base images running as non-root, shrinking image sizes by **37%** (215 MB to 134 MB) and reducing critical base-image CVEs.
 - Optimize Docker build pipelines and package caching by deploying and managing **APT Cacher NG** proxies, accelerating Ubuntu dependency downloads across development and CI environments.
-- Migrated on-premise Kubernetes cluster (k8s2) from Calico CNI + MetalLB to **Cilium eBPF**, deploying L2 announcements to deprecate MetalLB and enabling deep packet observability with **Hubble**.
+- Migrated an on-premise staging cluster from **Calico CNI** and **MetalLB** to **Cilium (eBPF)**, replacing MetalLB with L2 announcements and enabling network flow visibility with **Hubble**.
 - Deploy and operate centralized observability across 20+ servers using **Prometheus**, **Grafana**, native **Grafana Alloy** agents, and **Loki**; tune **Alertmanager** expressions to reduce false-positive alerts and route notifications to **Microsoft Teams**.
 - Automate host provisioning, runner deployments, and rolling cluster node upgrades using **Ansible** playbooks orchestrated via self-service **Semaphore UI** execution templates.
 - Administer production **PostgreSQL** and **MySQL** databases: user and role management, **PgBouncer** connection pooling, routine backups, replication checks, and storage volume expansion.
