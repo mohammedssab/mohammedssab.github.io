@@ -5,7 +5,7 @@
 ---
 
 ## Professional Summary
-DevOps Engineer with 8+ years in Linux administration and Kubernetes platform engineering. Run 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.
+DevOps Engineer with 8+ years in Linux administration and multi-cluster Kubernetes platform engineering. Manage 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal, Proxmox) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.
 
 ---
 
@@ -15,11 +15,11 @@ DevOps Engineer with 8+ years in Linux administration and Kubernetes platform en
 **DevOps Engineer** | *Mar. 2026 – Present*
 
 - Design and maintain CI/CD pipelines across **GitHub Actions** and **Gitea Actions** for 15+ microservices; cut build and test durations by **65%** by provisioning dedicated runners with persistent Gradle and BuildKit layer caching.
-- Manage 8 Kubernetes clusters (production and staging) across **AWS EKS**, data center bare-metal (CRI-O), and immutable **Talos Linux** (37 nodes); standardize declarative GitOps rollouts using **Flux CD**, **Argo CD**, and **Kustomize** overlays.
+- Manage 8 Kubernetes clusters (production and staging) across **AWS EKS**, data center bare-metal (CRI-O), **Proxmox VE**, and immutable **Talos Linux** (37 nodes); standardize declarative GitOps rollouts using **Flux CD**, **Argo CD**, and **Kustomize** overlays.
 - Configure **Kubernetes Gateway API**, implementing Layer 7 ingress routing, TCP listeners for IoT telemetry traffic, PROXY protocol handling, and cert-manager automated TLS certificate lifecycle management.
 - Harden container security by migrating API and client workloads to **Chainguard Wolfi** base images running as non-root, shrinking image sizes by **37%** (215 MB to 134 MB) and reducing critical base-image CVEs.
 - Optimize Docker build pipelines and package caching by deploying and managing **APT Cacher NG** proxies, accelerating Ubuntu dependency downloads across development and CI environments.
-- Migrated secondary Kubernetes cluster from Calico CNI + MetalLB to **Cilium eBPF**, deploying L2 announcements to deprecate MetalLB and enabling deep packet observability with **Hubble**.
+- Migrated on-premise Kubernetes cluster (k8s2) from Calico CNI + MetalLB to **Cilium eBPF**, deploying L2 announcements to deprecate MetalLB and enabling deep packet observability with **Hubble**.
 - Deploy and operate centralized observability across 20+ servers using **Prometheus**, **Grafana**, native **Grafana Alloy** agents, and **Loki**; tune **Alertmanager** expressions to reduce false-positive alerts and route notifications to **Microsoft Teams**.
 - Automate host provisioning, runner deployments, and rolling cluster node upgrades using **Ansible** playbooks orchestrated via self-service **Semaphore UI** execution templates.
 - Administer production **PostgreSQL** and **MySQL** databases: user and role management, **PgBouncer** connection pooling, routine backups, replication checks, and storage volume expansion.

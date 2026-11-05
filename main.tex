@@ -80,7 +80,7 @@
 
 %-----------PROFESSIONAL SUMMARY-----------
 \section{Professional Summary}
-\small{DevOps Engineer with 8+ years in Linux administration and Kubernetes platform engineering. Run 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.}
+\small{DevOps Engineer with 8+ years in Linux administration and multi-cluster Kubernetes platform engineering. Manage 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal, Proxmox) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.}
 
 %-----------EXPERIENCE-----------
 \section{Professional Experience}
@@ -91,11 +91,11 @@
 {DevOps Engineer}{Pune, IN}
 \resumeItemListStart
 \resumeItem{Design and maintain CI/CD pipelines across \textbf{GitHub Actions} and \textbf{Gitea Actions} for 15+ microservices; cut build and test durations by \textbf{65\%} by provisioning dedicated runners with persistent Gradle and BuildKit layer caching.}
-\resumeItem{Manage 8 Kubernetes clusters (production and staging) across \textbf{AWS EKS}, data center bare-metal (CRI-O), and immutable \textbf{Talos Linux} (37 nodes); standardize declarative GitOps rollouts using \textbf{Flux CD}, \textbf{Argo CD}, and \textbf{Kustomize} overlays.}
+\resumeItem{Manage 8 Kubernetes clusters (production and staging) across \textbf{AWS EKS}, data center bare-metal (CRI-O), \textbf{Proxmox VE}, and immutable \textbf{Talos Linux} (37 nodes); standardize declarative GitOps rollouts using \textbf{Flux CD}, \textbf{Argo CD}, and \textbf{Kustomize} overlays.}
 \resumeItem{Configure \textbf{Kubernetes Gateway API}, implementing Layer 7 ingress routing, TCP listeners for IoT telemetry traffic, PROXY protocol handling, and cert-manager automated TLS certificate lifecycle management.}
 \resumeItem{Harden container security by migrating API and client workloads to \textbf{Chainguard Wolfi} base images running as non-root, shrinking image sizes by \textbf{37\%} (215 MB to 134 MB) and reducing critical base-image CVEs.}
 \resumeItem{Optimize Docker build pipelines and package caching by deploying and managing \textbf{APT Cacher NG} proxies, accelerating Ubuntu dependency downloads across development and CI environments.}
-\resumeItem{Migrated secondary Kubernetes cluster from Calico CNI + MetalLB to \textbf{Cilium eBPF}, deploying L2 announcements to deprecate MetalLB and enabling deep packet observability with \textbf{Hubble}.}
+\resumeItem{Migrated on-premise Kubernetes cluster (k8s2) from Calico CNI + MetalLB to \textbf{Cilium eBPF}, deploying L2 announcements to deprecate MetalLB and enabling deep packet observability with \textbf{Hubble}.}
 \resumeItem{Deploy and operate centralized observability across 20+ servers using \textbf{Prometheus}, \textbf{Grafana}, native \textbf{Grafana Alloy} agents, and \textbf{Loki}; tune \textbf{Alertmanager} expressions to reduce false-positive alerts and route notifications to \textbf{Microsoft Teams}.}
 \resumeItem{Automate host provisioning, runner deployments, and rolling cluster node upgrades using \textbf{Ansible} playbooks orchestrated via self-service \textbf{Semaphore UI} execution templates.}
 \resumeItem{Administer production \textbf{PostgreSQL} and \textbf{MySQL} databases: user and role management, \textbf{PgBouncer} connection pooling, routine backups, replication checks, and storage volume expansion.}
