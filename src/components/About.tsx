@@ -6,7 +6,7 @@ import { FiTarget } from "react-icons/fi";
 
 const About = () => {
   const recentSkills = [
-    "Kubernetes (Talos Linux & Proxmox)",
+    "Kubernetes (AWS EKS, Talos Linux & CRI-O)",
     "Cilium CNI (eBPF) & Gateway API",
     "GitOps (FluxCD & Argo CD)",
     "PostgreSQL & MySQL (PgBouncer, Backups)",

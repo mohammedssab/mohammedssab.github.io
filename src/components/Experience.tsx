@@ -12,7 +12,7 @@ const jobs = [
     url: "#",
     descriptions: [
       "Design and maintain CI/CD pipelines across GitHub Actions and Gitea Actions for 15+ microservices, cutting build durations by 65% with dedicated runners and persistent layer caching.",
-      "Manage 3 Kubernetes clusters (production and staging) across bare-metal, Proxmox, and immutable Talos Linux (30+ nodes) with declarative GitOps via Flux CD, Argo CD, and Kustomize.",
+      "Manage 8 Kubernetes clusters (production and staging) across AWS EKS, data center bare-metal (CRI-O), and immutable Talos Linux (37 nodes) with declarative GitOps via Flux CD, Argo CD, and Kustomize.",
       "Configure Kubernetes Gateway API with Layer 7 ingress routing, TCP listeners for IoT telemetry traffic, PROXY protocol handling, and cert-manager automated TLS lifecycle management.",
       "Harden container security by migrating API and client workloads to Chainguard Wolfi base images running as non-root, shrinking image sizes by 37% and reducing critical CVEs.",
       "Migrated secondary Kubernetes cluster from Calico CNI + MetalLB to Cilium eBPF, deploying L2 announcements and enabling deep packet observability with Hubble.",

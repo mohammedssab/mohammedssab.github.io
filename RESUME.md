@@ -5,7 +5,7 @@
 ---
 
 ## Professional Summary
-DevOps Engineer with 8+ years in Linux administration and Kubernetes platform engineering. Run production and staging Kubernetes clusters (Talos Linux, Proxmox) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.
+DevOps Engineer with 8+ years in Linux administration and Kubernetes platform engineering. Run 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.
 
 ---
 
@@ -15,7 +15,7 @@ DevOps Engineer with 8+ years in Linux administration and Kubernetes platform en
 **DevOps Engineer** | *Mar. 2026 – Present*
 
 - Design and maintain CI/CD pipelines across **GitHub Actions** and **Gitea Actions** for 15+ microservices; cut build and test durations by **65%** by provisioning dedicated runners with persistent Gradle and BuildKit layer caching.
-- Manage 3 Kubernetes clusters (production and staging) across bare-metal, Proxmox, and immutable **Talos Linux** (30+ nodes); standardize declarative GitOps rollouts using **Flux CD**, **Argo CD**, and **Kustomize** overlays.
+- Manage 8 Kubernetes clusters (production and staging) across **AWS EKS**, data center bare-metal (CRI-O), and immutable **Talos Linux** (37 nodes); standardize declarative GitOps rollouts using **Flux CD**, **Argo CD**, and **Kustomize** overlays.
 - Configure **Kubernetes Gateway API**, implementing Layer 7 ingress routing, TCP listeners for IoT telemetry traffic, PROXY protocol handling, and cert-manager automated TLS certificate lifecycle management.
 - Harden container security by migrating API and client workloads to **Chainguard Wolfi** base images running as non-root, shrinking image sizes by **37%** (215 MB to 134 MB) and reducing critical base-image CVEs.
 - Optimize Docker build pipelines and package caching by deploying and managing **APT Cacher NG** proxies, accelerating Ubuntu dependency downloads across development and CI environments.
@@ -54,10 +54,10 @@ DevOps Engineer with 8+ years in Linux administration and Kubernetes platform en
 ---
 
 ## Technical Skills
-- **Kubernetes & Containers:** Kubernetes, Talos Linux, Docker, Helm, Kustomize, Cilium (eBPF), Hubble, Gateway API, Ingress, cert-manager
+- **Kubernetes & Containers:** Kubernetes, AWS EKS, Talos Linux, CRI-O, Docker, Helm, Kustomize, Cilium (eBPF), Hubble, Gateway API, Ingress, cert-manager
 - **GitOps & CI/CD:** Argo CD, Flux CD, GitHub Actions, Gitea Actions, Jenkins, Renovate Bot
 - **Configuration & Automation:** Ansible, Semaphore UI, Proxmox VE, Bash Scripting
-- **Cloud:** AWS (EC2, Route 53)
+- **Cloud:** AWS (EKS, EC2, Route 53)
 - **Databases & Storage:** PostgreSQL, PgBouncer, MySQL, MariaDB, MSSQL, MongoDB, Replication, Backup and Recovery
 - **Monitoring & Observability:** Prometheus, Grafana, Grafana Alloy, Loki, Alertmanager, Uptime Kuma
 - **Security & DevSecOps:** HashiCorp Vault, OpenBao, AppRole, Harbor, Trivy, SonarQube, Chainguard Wolfi, Let’s Encrypt SSL/TLS
