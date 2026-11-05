@@ -24,8 +24,8 @@
 \addtolength{\oddsidemargin}{-0.5in}
 \addtolength{\evensidemargin}{-0.5in}
 \addtolength{\textwidth}{1in}
-\addtolength{\topmargin}{-.5in}
-\addtolength{\textheight}{1.0in}
+\addtolength{\topmargin}{-.6in}
+\addtolength{\textheight}{1.2in}
 
 \urlstyle{same}
 
@@ -37,7 +37,7 @@
 
 % Sections formatting
 \titleformat{\section}{
-  \vspace{-4pt}\scshape\raggedright\large
+  \vspace{-5pt}\scshape\raggedright\large
 }{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
 
 % Ensure that generated pdf is machine readable/ATS parsable
@@ -46,7 +46,7 @@
 % Custom commands
 \newcommand{\resumeItem}[1]{
   \item\small{
-    {#1 \vspace{-2pt}}
+    {#1 \vspace{-2.5pt}}
   }
 }
 
@@ -60,7 +60,7 @@
 
 \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[itemsep=1.5pt, parsep=0pt, topsep=1pt]}
 \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
 
 %-------------------------------------------
@@ -116,6 +116,8 @@
 \resumeItem{Automated routine server provisioning, security patching, and package management using \textbf{Ansible} playbooks and Proxmox virtual machine templates.}
 \resumeItem{Maintained self-hosted engineering toolchains including \textbf{Gitea}, \textbf{SonarQube}, \textbf{Nexus Repository}, \textbf{Harbor}, and \textbf{Vaultwarden}.}
 \resumeItemListEnd
+
+\newpage
 
 \resumeSubheading
 {Maharashtra Knowledge Corporation Limited (MKCL)}{Sep. 2018 -- Oct. 2022}
