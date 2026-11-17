@@ -40,15 +40,16 @@ const jobs = [
   },
   {
     company: "MKCL",
-    role: "Information Technology Fellow",
+    role: "MFS Intern | Fellow",
     range: "Sep 2018 - Oct 2022",
     url: "#",
     descriptions: [
-      "Provided Linux and Windows administration, improving operational continuity.",
-      "Managed Apache, Nginx, Tomcat, and IIS web servers for secure and optimized performance.",
-      "Administered Active Directory and managed MSSQL, MySQL, MongoDB, and MariaDB databases, improving availability and access management.",
-      "Automated deployments using Jenkins, Ansible, and Rundeck, reducing manual intervention.",
-      "Installed and configured Windows/Linux servers and essential network services while resolving application performance issues.",
+      "Administered Windows and Linux (RHEL, Ubuntu) servers, including installation, configuration, patching, security updates, and cross-layer troubleshooting.",
+      "Managed Apache, Nginx, Tomcat, and IIS web application servers for performance and security, with basic load balancing (HAProxy, Netscaler, Array LB).",
+      "Managed MSSQL, MySQL, MongoDB, and MariaDB databases, implementing database high availability through replication.",
+      "Automated deployments and integration workflows using Ansible, Rundeck, and Jenkins.",
+      "Implemented application performance monitoring using New Relic and Apache SkyWalking to resolve application crashes.",
+      "Managed user access via Active Directory and Group Policy; maintained ticketing records and technical documentation.",
     ],
   },
 ];

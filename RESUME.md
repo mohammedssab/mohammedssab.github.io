@@ -5,7 +5,7 @@
 ---
 
 ## Professional Summary
-DevOps Engineer with 8+ years in Linux administration and multi-cluster Kubernetes platform engineering. Manage 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal, Proxmox) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.
+DevOps Engineer with 5 years of professional experience in Linux administration and multi-cluster Kubernetes platform engineering, plus a 3-year work-integrated internship at MKCL. Manage 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal, Proxmox) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.
 
 ---
 
@@ -43,26 +43,27 @@ DevOps Engineer with 8+ years in Linux administration and multi-cluster Kubernet
 ---
 
 ### **Maharashtra Knowledge Corporation Limited (MKCL)** — Pune, India
-**Information Technology Fellow (Systems Administrator)** | *Sep. 2018 – Oct. 2022*
+**MFS Intern (Sep. 2018 – Jul. 2021) | Fellow (Aug. 2021 – Oct. 2022)**
 
-- Administered enterprise Linux (RHEL, Ubuntu) and Windows Server environments, supporting educational platforms serving **100k+ users**.
-- Configured and tuned **Apache HTTP**, **Nginx**, **Apache Tomcat**, and **IIS** web application servers.
-- Managed enterprise databases (**MySQL**, **MSSQL**, **MariaDB**, **MongoDB**), performing automated backups, role-based access control, and query optimization.
-- Automated routine server patching, log rotation, and scheduled backup workflows using **Jenkins**, **Ansible**, and **Rundeck**, reducing manual operational overhead.
-- Diagnosed and resolved system bottlenecks, memory leaks, and network connectivity issues through in-depth OS kernel log analysis and performance profiling.
+- Internship was part of the three-year work-integrated B.Sc. Computer System Administration program (MKCL Work Lab); administered Windows and Linux (RHEL, Ubuntu) servers, including installation, configuration, patching, and security updates, with technical support and troubleshooting across network and application layers.
+- Managed **Apache**, **Nginx**, **Apache Tomcat**, and **IIS** web servers for performance and security; basic experience with load balancing (HAProxy, Netscaler, Array LB).
+- Worked on **MSSQL**, **MySQL**, **MongoDB**, and **MariaDB**; implemented database high availability through replication.
+- Automated deployments using **Ansible** and **Rundeck**, and worked with **Jenkins** for automation and integration.
+- Implemented application performance monitoring with **New Relic** and **Apache SkyWalking**; analyzed logs to identify and resolve application crashes.
+- Managed user access with Active Directory and Group Policy; maintained ticketing records and documentation of technical issues and solutions.
 
 ---
 
 ## Technical Skills
 - **Kubernetes & Containers:** Kubernetes, AWS EKS, Talos Linux, CRI-O, Docker, Helm, Kustomize, Cilium (eBPF), Hubble, Gateway API, Ingress, cert-manager
 - **GitOps & CI/CD:** Argo CD, Flux CD, GitHub Actions, Gitea Actions, Jenkins, Renovate Bot
-- **Configuration & Automation:** Ansible, Semaphore UI, Proxmox VE, Bash Scripting
+- **Configuration & Automation:** Ansible, Semaphore UI, Rundeck, Proxmox VE, Bash Scripting
 - **Cloud:** AWS (EKS, EC2, Route 53)
 - **Databases & Storage:** PostgreSQL, PgBouncer, MySQL, MariaDB, MSSQL, MongoDB, Replication, Backup and Recovery
-- **Monitoring & Observability:** Prometheus, Grafana, Grafana Alloy, Loki, Alertmanager, Uptime Kuma
+- **Monitoring & Observability:** Prometheus, Grafana, Grafana Alloy, Loki, Alertmanager, Uptime Kuma, New Relic, Apache SkyWalking
 - **Security & DevSecOps:** HashiCorp Vault, OpenBao, AppRole, Harbor, Trivy, SonarQube, Chainguard Wolfi, Let’s Encrypt SSL/TLS
-- **Web & Networking:** Linux Networking, Nginx, Apache, Tomcat, Reverse Proxy, Firewalls
-- **Operating Systems:** Ubuntu Server (22.04/24.04/26.04), Debian, Talos Linux, Linux, Windows Server
+- **Web & Networking:** Linux Networking, Nginx, Apache, Tomcat, IIS, Reverse Proxy, Firewalls, Active Directory
+- **Operating Systems:** Ubuntu Server (22.04/24.04/26.04), Debian, RHEL, Talos Linux, Windows Server
 - **Developer Platforms:** Gitea, Sonatype Nexus Repository, Harbor Registry, Vaultwarden
 
 ---
