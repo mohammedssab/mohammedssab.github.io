@@ -45,7 +45,7 @@ DevOps Engineer with 5 years of professional experience in Linux administration 
 ### **Maharashtra Knowledge Corporation Limited (MKCL)** — Pune, India
 **MFS Intern (Sep. 2018 – Jul. 2021) | Fellow (Aug. 2021 – Oct. 2022)**
 
-- Internship was part of the three-year work-integrated B.Sc. Computer System Administration program (MKCL Work Lab); administered Windows and Linux (RHEL, Ubuntu) servers, including installation, configuration, patching, and security updates, with technical support and troubleshooting across network and application layers.
+- Internship under the work-integrated B.Sc. CSA program; administered Windows and Linux (RHEL, Ubuntu) servers, including installation, configuration, patching, and security updates, with technical support and troubleshooting across network and application layers.
 - Managed **Apache**, **Nginx**, **Apache Tomcat**, and **IIS** web servers for performance and security; basic experience with load balancing (HAProxy, Netscaler, Array LB).
 - Worked on **MSSQL**, **MySQL**, **MongoDB**, and **MariaDB**; implemented database high availability through replication.
 - Automated deployments using **Ansible** and **Rundeck**, and worked with **Jenkins** for automation and integration.
@@ -71,4 +71,4 @@ DevOps Engineer with 5 years of professional experience in Linux administration 
 ## Education
 
 - **Master of Science in Computer Science (Part-time)** | Savitribai Phule Pune University, Pune, IN (*Sep. 2021 – Oct. 2023*)
-- **Bachelor of Science in Computer System Administration** | Yashwantrao Chavan Maharashtra Open University (YCMOU), Pune, IN (*Aug. 2018 – Jul. 2021*)
+- **Bachelor of Science in Computer System Administration (work-integrated program at MKCL)** | Yashwantrao Chavan Maharashtra Open University (YCMOU), Pune, IN (*Aug. 2018 – Jul. 2021*)
