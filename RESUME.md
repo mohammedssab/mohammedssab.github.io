@@ -5,7 +5,7 @@
 ---
 
 ## Professional Summary
-DevOps Engineer with 5 years of professional experience in Linux administration and multi-cluster Kubernetes platform engineering, plus a 3-year work-integrated internship at MKCL. Manage 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal, Proxmox) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.
+DevOps Engineer with 5 years of professional experience in Linux administration and multi-cluster Kubernetes platform engineering. Manage 8 production and staging Kubernetes clusters (AWS EKS, Talos Linux, bare-metal, Proxmox) with GitOps delivery via Argo CD and Flux CD, CI/CD on GitHub Actions and Gitea Actions, Ansible automation, and Prometheus, Grafana, and Loki observability.
 
 ---
 
